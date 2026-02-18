@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://le-marque.com"),
+  metadataBase: new URL("https://lemarque-next.vercel.app"),
   title: {
     default: "LEMARQUE",
     template: "%s | LEMARQUE",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://le-marque.com",
+    url: "https://lemarque-next.vercel.app",
     siteName: "LEMARQUE",
     title: "LEMARQUE | Manufactured 1/1 Attire",
     description:
