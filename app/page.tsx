@@ -1,65 +1,191 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowDown, ArrowRight } from "lucide-react";
+import { Navigation } from "@/components/navigation";
+import { Footer } from "@/components/footer";
+import { ScrollReveal } from "@/components/scroll-reveal";
+import { collections } from "@/lib/collections";
+
+function HeroSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <section ref={ref} className="relative h-screen w-full overflow-hidden">
+      <motion.div className="absolute inset-0" style={{ y }}>
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
+          src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1920&q=80&fit=crop"
+          alt="LEMARQUE — High-end fashion"
+          fill
           priority
+          className="object-cover"
+          sizes="100vw"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+        <div className="absolute inset-0 bg-black/50" />
+      </motion.div>
+
+      <motion.div
+        className="relative z-10 flex flex-col items-center justify-center h-full px-6"
+        style={{ opacity }}
+      >
+        <motion.h1
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
+          className="font-brand text-5xl md:text-7xl lg:text-8xl tracking-[0.4em] md:tracking-[0.5em] text-white text-center"
+        >
+          LEMARQUE
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 0.6, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.0 }}
+          className="mt-6 text-xs md:text-sm uppercase tracking-[0.3em] text-white/60"
+        >
+          Avant-Garde Fashion
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.8, duration: 0.8 }}
+          className="absolute bottom-12"
+        >
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          >
+            <ArrowDown className="w-4 h-4 text-white/40" />
+          </motion.div>
+        </motion.div>
+      </motion.div>
+    </section>
+  );
+}
+
+function FeaturedCollections() {
+  const featured = collections.slice(0, 4);
+
+  return (
+    <section className="py-24 md:py-32 px-6 md:px-10">
+      <ScrollReveal>
+        <div className="flex items-end justify-between mb-12 md:mb-16">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-3">
+              Latest
+            </p>
+            <h2 className="text-2xl md:text-3xl font-light tracking-wider">
+              Collections
+            </h2>
+          </div>
+          <Link
+            href="/gallery"
+            className="text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300 flex items-center gap-2"
+          >
+            View All
+            <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
+      </ScrollReveal>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        {featured.map((collection, index) => (
+          <ScrollReveal key={collection.slug} delay={index * 0.1}>
+            <Link
+              href={`/collection/${collection.slug}`}
+              className="group block relative aspect-[3/4] overflow-hidden"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              <Image
+                src={collection.heroImage.src}
+                alt={collection.heroImage.alt}
+                fill
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-5">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-white/50 mb-1">
+                  {collection.season} {collection.year}
+                </p>
+                <h3 className="text-sm uppercase tracking-[0.25em] text-white font-light">
+                  {collection.name}
+                </h3>
+              </div>
+            </Link>
+          </ScrollReveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function EnterGallery() {
+  return (
+    <section className="py-24 md:py-32 px-6 md:px-10">
+      <ScrollReveal>
+        <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-6">
+            Immersive Experience
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          <h2 className="text-3xl md:text-5xl font-light tracking-wider mb-6">
+            Enter the Gallery
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-10 max-w-md">
+            Swipe through our collections in a fullscreen immersive experience.
+            Discover each piece, explore every detail.
+          </p>
+          <Link
+            href="/gallery"
+            className="group inline-flex items-center gap-3 border border-white/20 px-8 py-4 text-xs uppercase tracking-[0.25em] hover:bg-white hover:text-black transition-all duration-500"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Explore
+            <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
         </div>
-      </main>
-    </div>
+      </ScrollReveal>
+    </section>
+  );
+}
+
+function BrandStatement() {
+  return (
+    <section className="py-24 md:py-40 px-6 md:px-10">
+      <div className="max-w-4xl mx-auto">
+        <ScrollReveal>
+          <blockquote className="text-xl md:text-3xl lg:text-4xl font-light leading-relaxed tracking-wide text-center">
+            &ldquo;Fashion is the armor to survive the reality of everyday
+            life.&rdquo;
+          </blockquote>
+        </ScrollReveal>
+        <ScrollReveal delay={0.2}>
+          <p className="text-center mt-8 text-xs uppercase tracking-[0.3em] text-muted-foreground">
+            &mdash; The Philosophy of LEMARQUE
+          </p>
+        </ScrollReveal>
+      </div>
+    </section>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <main className="min-h-screen">
+      <Navigation />
+      <HeroSection />
+      <BrandStatement />
+      <FeaturedCollections />
+      <EnterGallery />
+      <Footer />
+    </main>
   );
 }
