@@ -43,7 +43,7 @@ function HeroSection() {
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
-          className="font-brand text-5xl md:text-7xl lg:text-8xl tracking-[0.4em] md:tracking-[0.5em] text-white text-center"
+          className="font-brand text-3xl sm:text-5xl md:text-7xl lg:text-8xl tracking-[0.25em] sm:tracking-[0.4em] md:tracking-[0.5em] text-white text-center"
         >
           LEMARQUE
         </motion.h1>
