@@ -10,6 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://le-marque.com"),
   title: {
     default: "LEMARQUE",
     template: "%s | LEMARQUE",
@@ -39,10 +40,10 @@ export const metadata: Metadata = {
       "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique 1/1 creation.",
     images: [
       {
-        url: "https://le-marque.com/wp-content/uploads/2025/01/LeMarque_Kuhlhaus_82-scaled.webp",
-        width: 2560,
-        height: 1707,
-        alt: "LEMARQUE XXV Collection at Kuhlhaus",
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "LEMARQUE. Manufactured 1/1 Attire.",
       },
     ],
   },
@@ -51,9 +52,7 @@ export const metadata: Metadata = {
     title: "LEMARQUE | Manufactured 1/1 Attire",
     description:
       "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique 1/1 creation.",
-    images: [
-      "https://le-marque.com/wp-content/uploads/2025/01/LeMarque_Kuhlhaus_82-scaled.webp",
-    ],
+    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,
