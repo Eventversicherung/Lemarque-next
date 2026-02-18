@@ -30,7 +30,7 @@ function HeroParallax({ collection }: { collection: Collection }) {
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-background via-black/30 to-transparent" />
       </motion.div>
 
       <motion.div
@@ -79,7 +79,7 @@ function ImageGrid({ collection }: { collection: Collection }) {
         {collection.images.map((image, index) => (
           <ScrollReveal key={index} delay={index * 0.1}>
             <motion.div
-              className="relative aspect-[2/3] overflow-hidden group"
+              className="relative aspect-2/3 overflow-hidden group"
               whileHover={{ scale: 1.01 }}
               transition={{ duration: 0.4 }}
             >
@@ -119,7 +119,7 @@ function RelatedCollections({ currentSlug }: { currentSlug: string }) {
           <ScrollReveal key={collection.slug} delay={index * 0.1}>
             <Link
               href={`/collection/${collection.slug}`}
-              className="group block relative aspect-[4/5] overflow-hidden"
+              className="group block relative aspect-4/5 overflow-hidden"
             >
               <Image
                 src={collection.heroImage.src}
@@ -128,7 +128,7 @@ function RelatedCollections({ currentSlug }: { currentSlug: string }) {
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5">
                 <p className="text-[10px] uppercase tracking-[0.3em] text-white/50 mb-1">
                   {collection.season} {collection.year}

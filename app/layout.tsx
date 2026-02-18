@@ -15,11 +15,13 @@ export const metadata: Metadata = {
     template: "%s | LEMARQUE",
   },
   description:
-    "LEMARQUE — High-end fashion label. Explore our collections through an immersive visual experience.",
+    "LEMARQUE — Manufactured 1/1 Attire. Handcrafted leather goods, avant-garde outerwear, and unique accessories.",
   keywords: [
     "LEMARQUE",
     "fashion",
-    "high-end",
+    "manufactured 1/1",
+    "handmade",
+    "leather goods",
     "luxury",
     "collections",
     "designer",
@@ -30,27 +32,27 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://lemarque.com",
+    url: "https://le-marque.com",
     siteName: "LEMARQUE",
-    title: "LEMARQUE",
+    title: "LEMARQUE — Manufactured 1/1 Attire",
     description:
-      "High-end fashion label. Explore our collections through an immersive visual experience.",
+      "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique 1/1 creation.",
     images: [
       {
-        url: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1200&h=630&fit=crop&q=80",
-        width: 1200,
-        height: 630,
-        alt: "LEMARQUE",
+        url: "https://le-marque.com/wp-content/uploads/2025/01/LeMarque_Kuhlhaus_82-scaled.webp",
+        width: 2560,
+        height: 1707,
+        alt: "LEMARQUE — XXV Collection at Kuhlhaus",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "LEMARQUE",
+    title: "LEMARQUE — Manufactured 1/1 Attire",
     description:
-      "High-end fashion label. Explore our collections through an immersive visual experience.",
+      "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique 1/1 creation.",
     images: [
-      "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1200&h=630&fit=crop&q=80",
+      "https://le-marque.com/wp-content/uploads/2025/01/LeMarque_Kuhlhaus_82-scaled.webp",
     ],
   },
   robots: {

@@ -9,7 +9,8 @@ import { BrandLogo } from "@/components/brand-logo";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { href: "/gallery", label: "Gallery" },
+  { href: "/collection/xxv", label: "XXV Collection" },
+  { href: "/gallery", label: "Archive" },
   { href: "/about", label: "About" },
 ];
 
@@ -55,7 +56,7 @@ export function Navigation() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-            className="fixed inset-0 z-[100] bg-black flex flex-col"
+            className="fixed inset-0 z-100 bg-black flex flex-col"
           >
             <div className="flex items-center justify-between px-6 py-5">
               <BrandLogo size="sm" className="text-white" />

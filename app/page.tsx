@@ -22,15 +22,17 @@ function HeroSection() {
   return (
     <section ref={ref} className="relative h-screen w-full overflow-hidden">
       <motion.div className="absolute inset-0" style={{ y }}>
-        <Image
-          src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1920&q=80&fit=crop"
-          alt="LEMARQUE — High-end fashion"
-          fill
-          priority
-          className="object-cover"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-black/50" />
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="/videos/xxv-hero-poster.jpg"
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/videos/xxv-hero.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-black/40" />
       </motion.div>
 
       <motion.div
@@ -52,7 +54,7 @@ function HeroSection() {
           transition={{ duration: 0.8, delay: 1.0 }}
           className="mt-6 text-xs md:text-sm uppercase tracking-[0.3em] text-white/60"
         >
-          Avant-Garde Fashion
+          Manufactured 1/1 Attire
         </motion.p>
 
         <motion.div
@@ -103,7 +105,7 @@ function FeaturedCollections() {
           <ScrollReveal key={collection.slug} delay={index * 0.1}>
             <Link
               href={`/collection/${collection.slug}`}
-              className="group block relative aspect-[3/4] overflow-hidden"
+              className="group block relative aspect-3/4 overflow-hidden"
             >
               <Image
                 src={collection.heroImage.src}
@@ -112,7 +114,7 @@ function FeaturedCollections() {
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/0 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5">
                 <p className="text-[10px] uppercase tracking-[0.3em] text-white/50 mb-1">
                   {collection.season} {collection.year}
@@ -163,13 +165,13 @@ function BrandStatement() {
       <div className="max-w-4xl mx-auto">
         <ScrollReveal>
           <blockquote className="text-xl md:text-3xl lg:text-4xl font-light leading-relaxed tracking-wide text-center">
-            &ldquo;Fashion is the armor to survive the reality of everyday
-            life.&rdquo;
+            &ldquo;Every piece is manufactured as a unique 1/1 creation
+            &mdash; handmade, uncompromising, irreplaceable.&rdquo;
           </blockquote>
         </ScrollReveal>
         <ScrollReveal delay={0.2}>
           <p className="text-center mt-8 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            &mdash; The Philosophy of LEMARQUE
+            &mdash; LEMARQUE
           </p>
         </ScrollReveal>
       </div>

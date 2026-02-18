@@ -72,7 +72,7 @@ export function GalleryView() {
                 className="object-cover"
                 sizes="100vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-black/20" />
 
               <motion.div
                 className="absolute bottom-0 left-0 right-0 p-8 md:p-12"

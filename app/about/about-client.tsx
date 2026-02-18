@@ -7,6 +7,8 @@ import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
 
+const IMG_BASE = "https://le-marque.com/wp-content/uploads";
+
 function AboutHero() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -19,8 +21,8 @@ function AboutHero() {
     <section ref={ref} className="relative h-[60vh] md:h-[70vh] overflow-hidden">
       <motion.div className="absolute inset-0" style={{ y }}>
         <Image
-          src="https://images.unsplash.com/photo-1558171813-4c088753af8f?w=1920&q=80&fit=crop"
-          alt="LEMARQUE atelier"
+          src={`${IMG_BASE}/2025/01/LeMarque_Kuhlhaus_35-scaled.webp`}
+          alt="LEMARQUE at Kuhlhaus"
           fill
           priority
           className="object-cover"
@@ -36,7 +38,7 @@ function AboutHero() {
           transition={{ duration: 0.8, delay: 0.3 }}
         >
           <p className="text-[10px] uppercase tracking-[0.3em] text-white/50 mb-3">
-            Est. 2015
+            Manufactured 1/1 Attire
           </p>
           <h1 className="font-brand text-4xl md:text-6xl tracking-[0.35em] text-white">
             ABOUT
@@ -59,26 +61,27 @@ function Philosophy() {
 
         <ScrollReveal delay={0.1}>
           <h2 className="text-2xl md:text-4xl font-light leading-relaxed tracking-wide mb-8">
-            We believe fashion exists at the intersection of art and architecture.
+            Every piece is a unique creation &mdash; manufactured 1/1, never
+            reproduced.
           </h2>
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-6">
-            LEMARQUE was founded on the principle that clothing is more than
-            function — it is a form of expression, a statement of identity, and
-            a work of art. Each collection is conceived as a complete universe,
-            with its own language, its own logic, and its own emotional
-            landscape.
+            LEMARQUE was founded on the conviction that true luxury lies in
+            singularity. Each garment and accessory is handmade as a one-of-one
+            piece, crafted from the finest genuine leather, stainless steel, and
+            cotton. There are no production runs, no mass manufacturing &mdash;
+            only individual creations that carry the mark of their maker.
           </p>
         </ScrollReveal>
 
         <ScrollReveal delay={0.3}>
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-            Drawing inspiration from brutalist architecture, contemporary art,
-            and the raw beauty of natural materials, our designs challenge
-            conventional notions of beauty while remaining deeply committed to
-            craftsmanship and quality.
+            From bomber jackets to leather goods, harnesses to bags &mdash;
+            every item may require fittings and the process of production
+            usually takes up to six weeks. This is fashion at its most
+            intentional: unhurried, uncompromising, and entirely unique.
           </p>
         </ScrollReveal>
       </div>
@@ -91,8 +94,8 @@ function FullBleedImage() {
     <ScrollReveal>
       <section className="relative h-[50vh] md:h-[70vh] overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=1920&q=80&fit=crop"
-          alt="LEMARQUE design process"
+          src={`${IMG_BASE}/2025/01/LeMarque_Kuhlhaus_65-scaled.webp`}
+          alt="LEMARQUE — Kuhlhaus editorial"
           fill
           className="object-cover"
           sizes="100vw"
@@ -116,18 +119,18 @@ function Craftsmanship() {
 
           <ScrollReveal delay={0.1}>
             <h2 className="text-2xl md:text-3xl font-light leading-relaxed tracking-wide mb-8">
-              Every stitch carries intention. Every cut tells a story.
+              Genuine leather. Stainless steel. Cotton. Nothing less.
             </h2>
           </ScrollReveal>
 
           <ScrollReveal delay={0.2}>
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-              Our atelier in Paris brings together master craftspeople who share
-              our uncompromising vision. From sourcing the finest fabrics to the
-              final fitting, every stage of production is guided by a relentless
-              pursuit of perfection. We work with natural materials — raw silk,
-              virgin wool, organic cotton — chosen for their beauty, their
-              texture, and their longevity.
+              Our bags feature reinforced leather edges and bottoms with
+              stainless steel screws. The bombers combine technical construction
+              with handcrafted leather details. Every material is chosen for its
+              durability, its tactile quality, and its ability to age with
+              character. Select items may require individual fittings &mdash;
+              because what fits one body should not be forced to fit another.
             </p>
           </ScrollReveal>
         </div>
@@ -136,10 +139,10 @@ function Craftsmanship() {
           <ScrollReveal delay={0.2}>
             <div>
               <p className="font-brand text-4xl md:text-5xl tracking-wider mb-2">
-                10+
+                1/1
               </p>
               <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                Years of Design
+                Every Piece Unique
               </p>
             </div>
           </ScrollReveal>
@@ -147,10 +150,10 @@ function Craftsmanship() {
           <ScrollReveal delay={0.3}>
             <div>
               <p className="font-brand text-4xl md:text-5xl tracking-wider mb-2">
-                16
+                6
               </p>
               <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                Collections Released
+                Weeks Production Time
               </p>
             </div>
           </ScrollReveal>
@@ -158,10 +161,10 @@ function Craftsmanship() {
           <ScrollReveal delay={0.4}>
             <div>
               <p className="font-brand text-4xl md:text-5xl tracking-wider mb-2">
-                3
+                XXV
               </p>
               <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                Global Ateliers
+                Collections &amp; Counting
               </p>
             </div>
           </ScrollReveal>
@@ -177,15 +180,14 @@ function Vision() {
       <div className="max-w-4xl mx-auto text-center">
         <ScrollReveal>
           <blockquote className="text-xl md:text-3xl lg:text-4xl font-light leading-relaxed tracking-wide">
-            &ldquo;The future of fashion lies not in following trends, but in
-            creating timeless pieces that transcend seasons and speak to the
-            human condition.&rdquo;
+            &ldquo;We don&apos;t follow trends. We manufacture conviction
+            &mdash; one piece at a time.&rdquo;
           </blockquote>
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
           <p className="mt-8 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            &mdash; Creative Director, LEMARQUE
+            &mdash; LEMARQUE
           </p>
         </ScrollReveal>
       </div>

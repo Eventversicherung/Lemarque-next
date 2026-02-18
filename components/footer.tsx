@@ -11,17 +11,23 @@ export function Footer() {
             LEMARQUE
           </p>
           <p className="text-xs text-muted-foreground tracking-wider max-w-xs">
-            Redefining the boundaries of contemporary fashion through
-            avant-garde design and uncompromising vision.
+            Manufactured 1/1 Attire. Every piece handmade,
+            unique, and irreplaceable.
           </p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-6 md:gap-10">
           <Link
+            href="/collection/xxv"
+            className="text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300"
+          >
+            XXV Collection
+          </Link>
+          <Link
             href="/gallery"
             className="text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300"
           >
-            Gallery
+            Archive
           </Link>
           <Link
             href="/about"
@@ -29,6 +35,14 @@ export function Footer() {
           >
             About
           </Link>
+          <a
+            href="https://le-marque.com/contacts/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300"
+          >
+            Contact
+          </a>
         </div>
       </div>
 
@@ -37,7 +51,7 @@ export function Footer() {
           &copy; {new Date().getFullYear()} LEMARQUE. All rights reserved.
         </p>
         <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground/50">
-          Paris &mdash; Tokyo &mdash; New York
+          Handmade &mdash; Price Upon Request
         </p>
       </div>
     </footer>
