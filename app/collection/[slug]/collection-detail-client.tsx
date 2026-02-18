@@ -163,11 +163,11 @@ export function CollectionDetailClient({
 
         <div className="pt-4 px-6 md:px-16">
           <Link
-            href="/gallery"
+            href="/collections"
             className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300"
           >
             <ArrowLeft className="w-3 h-3" />
-            Back to Gallery
+            Back to Collections
           </Link>
         </div>
 

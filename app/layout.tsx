@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s | LEMARQUE",
   },
   description:
-    "LEMARQUE — Manufactured 1/1 Attire. Handcrafted leather goods, avant-garde outerwear, and unique accessories.",
+    "LEMARQUE. Manufactured 1/1 Attire. Handcrafted leather goods, avant-garde outerwear, and unique accessories.",
   keywords: [
     "LEMARQUE",
     "fashion",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://le-marque.com",
     siteName: "LEMARQUE",
-    title: "LEMARQUE — Manufactured 1/1 Attire",
+    title: "LEMARQUE | Manufactured 1/1 Attire",
     description:
       "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique 1/1 creation.",
     images: [
@@ -42,13 +42,13 @@ export const metadata: Metadata = {
         url: "https://le-marque.com/wp-content/uploads/2025/01/LeMarque_Kuhlhaus_82-scaled.webp",
         width: 2560,
         height: 1707,
-        alt: "LEMARQUE — XXV Collection at Kuhlhaus",
+        alt: "LEMARQUE XXV Collection at Kuhlhaus",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "LEMARQUE — Manufactured 1/1 Attire",
+    title: "LEMARQUE | Manufactured 1/1 Attire",
     description:
       "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique 1/1 creation.",
     images: [

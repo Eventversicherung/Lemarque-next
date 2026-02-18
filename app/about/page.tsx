@@ -4,7 +4,7 @@ import { AboutPageClient } from "./about-client";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "LEMARQUE — Redefining the boundaries of contemporary fashion through avant-garde design and uncompromising vision.",
+    "LEMARQUE. Redefining the boundaries of contemporary fashion through avant-garde design and uncompromising vision.",
 };
 
 export default function AboutPage() {

@@ -24,10 +24,10 @@ export function Footer() {
             XXV Collection
           </Link>
           <Link
-            href="/gallery"
+            href="/collections"
             className="text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300"
           >
-            Archive
+            Collections
           </Link>
           <Link
             href="/about"
@@ -51,7 +51,7 @@ export function Footer() {
           &copy; {new Date().getFullYear()} LEMARQUE. All rights reserved.
         </p>
         <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground/50">
-          Handmade &mdash; Price Upon Request
+          Handmade. Price Upon Request.
         </p>
       </div>
     </footer>

@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return {
-    title: `${collection.name} — ${collection.season} ${collection.year}`,
+    title: `${collection.name} | ${collection.season} ${collection.year}`,
     description: collection.description,
     openGraph: {
       title: `${collection.name} | LEMARQUE`,

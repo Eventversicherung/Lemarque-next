@@ -76,8 +76,6 @@ function HeroSection() {
 }
 
 function FeaturedCollections() {
-  const featured = collections.slice(0, 4);
-
   return (
     <section className="py-24 md:py-32 px-6 md:px-10">
       <ScrollReveal>
@@ -91,7 +89,7 @@ function FeaturedCollections() {
             </h2>
           </div>
           <Link
-            href="/gallery"
+            href="/collections"
             className="text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300 flex items-center gap-2"
           >
             View All
@@ -101,7 +99,7 @@ function FeaturedCollections() {
       </ScrollReveal>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        {featured.map((collection, index) => (
+        {collections.map((collection, index) => (
           <ScrollReveal key={collection.slug} delay={index * 0.1}>
             <Link
               href={`/collection/${collection.slug}`}
@@ -131,62 +129,12 @@ function FeaturedCollections() {
   );
 }
 
-function EnterGallery() {
-  return (
-    <section className="py-24 md:py-32 px-6 md:px-10">
-      <ScrollReveal>
-        <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-6">
-            Immersive Experience
-          </p>
-          <h2 className="text-3xl md:text-5xl font-light tracking-wider mb-6">
-            Enter the Gallery
-          </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed mb-10 max-w-md">
-            Swipe through our collections in a fullscreen immersive experience.
-            Discover each piece, explore every detail.
-          </p>
-          <Link
-            href="/gallery"
-            className="group inline-flex items-center gap-3 border border-white/20 px-8 py-4 text-xs uppercase tracking-[0.25em] hover:bg-white hover:text-black transition-all duration-500"
-          >
-            Explore
-            <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
-        </div>
-      </ScrollReveal>
-    </section>
-  );
-}
-
-function BrandStatement() {
-  return (
-    <section className="py-24 md:py-40 px-6 md:px-10">
-      <div className="max-w-4xl mx-auto">
-        <ScrollReveal>
-          <blockquote className="text-xl md:text-3xl lg:text-4xl font-light leading-relaxed tracking-wide text-center">
-            &ldquo;Every piece is manufactured as a unique 1/1 creation
-            &mdash; handmade, uncompromising, irreplaceable.&rdquo;
-          </blockquote>
-        </ScrollReveal>
-        <ScrollReveal delay={0.2}>
-          <p className="text-center mt-8 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            &mdash; LEMARQUE
-          </p>
-        </ScrollReveal>
-      </div>
-    </section>
-  );
-}
-
 export default function HomePage() {
   return (
     <main className="min-h-screen">
       <Navigation />
       <HeroSection />
-      <BrandStatement />
       <FeaturedCollections />
-      <EnterGallery />
       <Footer />
     </main>
   );

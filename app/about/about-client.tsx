@@ -61,7 +61,7 @@ function Philosophy() {
 
         <ScrollReveal delay={0.1}>
           <h2 className="text-2xl md:text-4xl font-light leading-relaxed tracking-wide mb-8">
-            Every piece is a unique creation &mdash; manufactured 1/1, never
+            Every piece is a unique creation. Manufactured 1/1, never
             reproduced.
           </h2>
         </ScrollReveal>
@@ -71,15 +71,15 @@ function Philosophy() {
             LEMARQUE was founded on the conviction that true luxury lies in
             singularity. Each garment and accessory is handmade as a one-of-one
             piece, crafted from the finest genuine leather, stainless steel, and
-            cotton. There are no production runs, no mass manufacturing &mdash;
-            only individual creations that carry the mark of their maker.
+            cotton. There are no production runs, no mass manufacturing.
+            Only individual creations that carry the mark of their maker.
           </p>
         </ScrollReveal>
 
         <ScrollReveal delay={0.3}>
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-            From bomber jackets to leather goods, harnesses to bags &mdash;
-            every item may require fittings and the process of production
+            From bomber jackets to leather goods, harnesses to bags.
+            Every item may require fittings and the process of production
             usually takes up to six weeks. This is fashion at its most
             intentional: unhurried, uncompromising, and entirely unique.
           </p>
@@ -95,7 +95,7 @@ function FullBleedImage() {
       <section className="relative h-[50vh] md:h-[70vh] overflow-hidden">
         <Image
           src={`${IMG_BASE}/2025/01/LeMarque_Kuhlhaus_65-scaled.webp`}
-          alt="LEMARQUE — Kuhlhaus editorial"
+          alt="LEMARQUE Kuhlhaus editorial"
           fill
           className="object-cover"
           sizes="100vw"
@@ -129,7 +129,7 @@ function Craftsmanship() {
               stainless steel screws. The bombers combine technical construction
               with handcrafted leather details. Every material is chosen for its
               durability, its tactile quality, and its ability to age with
-              character. Select items may require individual fittings &mdash;
+              character. Select items may require individual fittings,
               because what fits one body should not be forced to fit another.
             </p>
           </ScrollReveal>
@@ -180,14 +180,14 @@ function Vision() {
       <div className="max-w-4xl mx-auto text-center">
         <ScrollReveal>
           <blockquote className="text-xl md:text-3xl lg:text-4xl font-light leading-relaxed tracking-wide">
-            &ldquo;We don&apos;t follow trends. We manufacture conviction
-            &mdash; one piece at a time.&rdquo;
+            &ldquo;We don&apos;t follow trends. We manufacture conviction,
+            one piece at a time.&rdquo;
           </blockquote>
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
           <p className="mt-8 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            &mdash; LEMARQUE
+            LEMARQUE
           </p>
         </ScrollReveal>
       </div>
