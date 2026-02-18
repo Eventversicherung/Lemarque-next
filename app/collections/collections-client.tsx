@@ -9,6 +9,72 @@ import { BrandLogo } from "@/components/brand-logo";
 import { collections, type Collection } from "@/lib/collections";
 import { cn } from "@/lib/utils";
 
+function buildNextImageUrl(src: string, width = 1920): string {
+  return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=75`;
+}
+
+const preloadedUrls = new Set<string>();
+
+function preloadImage(src: string) {
+  const url = buildNextImageUrl(src);
+  if (preloadedUrls.has(url)) return;
+  preloadedUrls.add(url);
+  const img = new window.Image();
+  img.src = url;
+}
+
+function preloadCollection(collection: Collection) {
+  preloadImage(collection.heroImage.src);
+  collection.images.forEach((img) => preloadImage(img.src));
+}
+
+function useImagePreloader(activeIndex: number) {
+  const preloadedCollections = useRef(new Set<number>());
+
+  useEffect(() => {
+    preloadCollection(collections[activeIndex]);
+    preloadedCollections.current.add(activeIndex);
+
+    const neighbors = [activeIndex - 1, activeIndex + 1];
+    neighbors.forEach((i) => {
+      if (i >= 0 && i < collections.length) {
+        preloadImage(collections[i].heroImage.src);
+      }
+    });
+
+    const timer = setTimeout(() => {
+      neighbors.forEach((i) => {
+        if (
+          i >= 0 &&
+          i < collections.length &&
+          !preloadedCollections.current.has(i)
+        ) {
+          preloadCollection(collections[i]);
+          preloadedCollections.current.add(i);
+        }
+      });
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [activeIndex]);
+
+  useEffect(() => {
+    let delay = 800;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    collections.forEach((col, i) => {
+      if (preloadedCollections.current.has(i)) return;
+      timers.push(
+        setTimeout(() => {
+          preloadCollection(col);
+          preloadedCollections.current.add(i);
+        }, delay)
+      );
+      delay += 400;
+    });
+    return () => timers.forEach(clearTimeout);
+  }, []);
+}
+
 function HorizontalSlides({
   collection,
   isActive,
@@ -64,7 +130,8 @@ function HorizontalSlides({
                 src={image.src}
                 alt={image.alt}
                 fill
-                priority={index === 0}
+                priority={index <= 1}
+                loading="eager"
                 className="object-cover"
                 sizes="100vw"
               />
@@ -144,6 +211,8 @@ export function CollectionsPageClient() {
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef(0);
   const touchStartX = useRef(0);
+
+  useImagePreloader(activeCollection);
 
   const scrollTo = useCallback(
     (index: number) => {
