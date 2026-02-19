@@ -78,9 +78,11 @@ function useImagePreloader(activeIndex: number) {
 function HorizontalSlides({
   collection,
   isActive,
+  onEmblaApi,
 }: {
   collection: Collection;
   isActive: boolean;
+  onEmblaApi?: (api: ReturnType<typeof useEmblaCarousel>[1]) => void;
 }) {
   const allImages = [collection.heroImage, ...collection.images];
   const [current, setCurrent] = useState(0);
@@ -106,6 +108,12 @@ function HorizontalSlides({
       emblaApi.off("select", onSelect);
     };
   }, [emblaApi, onSelect]);
+
+  useEffect(() => {
+    if (emblaApi && onEmblaApi) {
+      onEmblaApi(emblaApi);
+    }
+  }, [emblaApi, onEmblaApi]);
 
   useEffect(() => {
     if (!isActive && emblaApi) {
@@ -211,8 +219,16 @@ export function CollectionsPageClient() {
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef(0);
   const touchStartX = useRef(0);
+  const horizontalApiRef = useRef<ReturnType<typeof useEmblaCarousel>[1]>(null);
 
   useImagePreloader(activeCollection);
+
+  const handleEmblaApi = useCallback(
+    (api: ReturnType<typeof useEmblaCarousel>[1]) => {
+      horizontalApiRef.current = api;
+    },
+    []
+  );
 
   const scrollTo = useCallback(
     (index: number) => {
@@ -263,6 +279,14 @@ export function CollectionsPageClient() {
         e.preventDefault();
         scrollTo(activeCollection - 1);
       }
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        horizontalApiRef.current?.scrollNext();
+      }
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        horizontalApiRef.current?.scrollPrev();
+      }
     };
 
     container.addEventListener("wheel", handleWheel, { passive: false });
@@ -309,6 +333,7 @@ export function CollectionsPageClient() {
           <HorizontalSlides
             collection={collections[activeCollection]}
             isActive={true}
+            onEmblaApi={handleEmblaApi}
           />
         </motion.div>
       </AnimatePresence>
