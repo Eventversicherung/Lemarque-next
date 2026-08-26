@@ -45,72 +45,246 @@ export const collections: Collection[] = [
     description:
       "The newest LEMARQUE collection. Scroll through every look, swipe to shop each piece.",
     longDescription:
-      "MALUM is the newest chapter for LEMARQUE. This preview uses placeholder imagery while the final campaign photography is being finalized - swap the files in public/collections/malum and fill in lib/products.ts with the real pieces, and everything below updates automatically.",
+      "MALUM is the newest chapter for LEMARQUE: gowns cut like armor, cashmere outerwear closed with shark-tooth hardware, and leather goods built to outlast trend cycles. Scroll through every look, swipe right to shop the piece, and tap through to its own page for the full story.",
     heroImage: {
-      src: "/collections/malum/hero.png",
-      alt: "MALUM Collection | LEMARQUE",
-      width: 1600,
-      height: 1067,
+      src: "/collections/malum/products/malum-black-latex-dress/01.webp",
+      alt: "MALUM Collection | Latex Slit Dress",
+      width: 914,
+      height: 1600,
     },
     images: [
       {
-        src: "/collections/malum/look-1.png",
-        alt: "MALUM Collection | look 1",
-        width: 1600,
-        height: 1067,
+        src: "/collections/malum/products/malum-siren-gown/01.webp",
+        alt: "MALUM Collection | Siren Gown",
+        width: 960,
+        height: 1600,
       },
       {
-        src: "/collections/malum/look-2.png",
-        alt: "MALUM Collection | look 2",
-        width: 1600,
-        height: 1067,
+        src: "/collections/malum/products/malum-ao-dai-gown/01.webp",
+        alt: "MALUM Collection | Ao Dai Gown",
+        width: 1086,
+        height: 1448,
       },
       {
-        src: "/collections/malum/look-3.png",
-        alt: "MALUM Collection | look 3",
-        width: 1600,
-        height: 1067,
+        src: "/collections/malum/products/malum-cashmere-barathea-suit/01.webp",
+        alt: "MALUM Collection | Cashmere Barathea Suit",
+        width: 1166,
+        height: 1600,
+      },
+      {
+        src: "/collections/malum/products/malum-otodus-cashmere-coat/01.webp",
+        alt: "MALUM Collection | Otodus Cashmere Coat",
+        width: 1197,
+        height: 1600,
+      },
+      {
+        src: "/collections/malum/products/malum-otodus-trench-coat/01.webp",
+        alt: "MALUM Collection | Otodus Trench Coat",
+        width: 1195,
+        height: 1600,
+      },
+      {
+        src: "/collections/malum/products/malum-bomber-jacket/01.webp",
+        alt: "MALUM Collection | MALUM Bomber Jacket",
+        width: 1086,
+        height: 1448,
+      },
+      {
+        src: "/collections/malum/products/malum-blk-co-dress/01.webp",
+        alt: "MALUM Collection | Cut-Out Knit Dress",
+        width: 1086,
+        height: 1448,
       },
     ],
     looks: [
       {
         image: {
-          src: "/collections/malum/look-1.png",
-          alt: "MALUM Collection | Look 01",
-          width: 1600,
-          height: 1067,
+          src: "/collections/malum/products/malum-siren-gown/01.webp",
+          alt: "MALUM | Siren Gown",
+          width: 960,
+          height: 1600,
         },
-        pieceSlugs: [
-          "malum-look-1-piece-1",
-          "malum-look-1-piece-2",
-          "malum-look-1-piece-3",
-        ],
+        pieceSlugs: ["malum-siren-gown"],
       },
       {
         image: {
-          src: "/collections/malum/look-2.png",
-          alt: "MALUM Collection | Look 02",
-          width: 1600,
-          height: 1067,
+          src: "/collections/malum/products/malum-black-latex-dress/01.webp",
+          alt: "MALUM | Latex Slit Dress",
+          width: 914,
+          height: 1600,
         },
-        pieceSlugs: [
-          "malum-look-2-piece-1",
-          "malum-look-2-piece-2",
-          "malum-look-2-piece-3",
-        ],
+        pieceSlugs: ["malum-black-latex-dress"],
       },
       {
         image: {
-          src: "/collections/malum/look-3.png",
-          alt: "MALUM Collection | Look 03",
-          width: 1600,
-          height: 1067,
+          src: "/collections/malum/products/malum-ao-dai-gown/01.webp",
+          alt: "MALUM | Ao Dai Gown",
+          width: 1086,
+          height: 1448,
         },
-        pieceSlugs: [
-          "malum-look-3-piece-1",
-          "malum-look-3-piece-2",
-          "malum-look-3-piece-3",
-        ],
+        pieceSlugs: ["malum-ao-dai-gown"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-blk-co-dress/01.webp",
+          alt: "MALUM | Cut-Out Knit Dress",
+          width: 1086,
+          height: 1448,
+        },
+        pieceSlugs: ["malum-blk-co-dress"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-cashmere-barathea-suit/01.webp",
+          alt: "MALUM | Cashmere Barathea Suit",
+          width: 1166,
+          height: 1600,
+        },
+        pieceSlugs: ["malum-cashmere-barathea-suit"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-otodus-cashmere-coat/01.webp",
+          alt: "MALUM | Otodus Cashmere Coat",
+          width: 1197,
+          height: 1600,
+        },
+        pieceSlugs: ["malum-otodus-cashmere-coat"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-otodus-trench-coat/01.webp",
+          alt: "MALUM | Otodus Trench Coat",
+          width: 1195,
+          height: 1600,
+        },
+        pieceSlugs: ["malum-otodus-trench-coat"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-bomber-jacket/01.webp",
+          alt: "MALUM | MALUM Bomber Jacket",
+          width: 1086,
+          height: 1448,
+        },
+        pieceSlugs: ["malum-bomber-jacket"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-brawl-hoodie/01.webp",
+          alt: "MALUM | Brawl Hoodie",
+          width: 1247,
+          height: 1600,
+        },
+        pieceSlugs: ["malum-brawl-hoodie"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-halfsleeve-suiting-set/01.webp",
+          alt: "MALUM | Halfsleeve Knit & Suiting Trousers",
+          width: 1084,
+          height: 1451,
+        },
+        pieceSlugs: ["malum-halfsleeve-suiting-set"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-tank-top-suiting-set/01.webp",
+          alt: "MALUM | Tank Top & Suiting Trousers",
+          width: 1083,
+          height: 1452,
+        },
+        pieceSlugs: ["malum-tank-top-suiting-set"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-leather-harness/01.webp",
+          alt: "MALUM | Leather Chest Harness",
+          width: 1084,
+          height: 1451,
+        },
+        pieceSlugs: ["malum-leather-harness"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-fish-leather-heels/01.webp",
+          alt: "MALUM | Fish Leather Heels",
+          width: 1144,
+          height: 1375,
+        },
+        pieceSlugs: ["malum-fish-leather-heels"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-nubuk-heels/01.webp",
+          alt: "MALUM | Nubuk Heels",
+          width: 1122,
+          height: 1402,
+        },
+        pieceSlugs: ["malum-nubuk-heels"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-nubuk-matt-heels/01.webp",
+          alt: "MALUM | Nubuk Matt Heels",
+          width: 1122,
+          height: 1402,
+        },
+        pieceSlugs: ["malum-nubuk-matt-heels"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-lumos-bag-black-fish/01.webp",
+          alt: "MALUM | Lumos Bag \u2014 Black Fish",
+          width: 1323,
+          height: 1189,
+        },
+        pieceSlugs: ["malum-lumos-bag-black-fish"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-lumos-bag-black-nubuk/01.webp",
+          alt: "MALUM | Lumos Bag \u2014 Black Nubuk",
+          width: 1084,
+          height: 1451,
+        },
+        pieceSlugs: ["malum-lumos-bag-black-nubuk"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-lumos-bag-creme-fish/01.webp",
+          alt: "MALUM | Lumos Bag \u2014 Cr\u00e8me Fish",
+          width: 1114,
+          height: 1412,
+        },
+        pieceSlugs: ["malum-lumos-bag-creme-fish"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-mini-handbag/01.webp",
+          alt: "MALUM | Mini Handbag",
+          width: 1278,
+          height: 1231,
+        },
+        pieceSlugs: ["malum-mini-handbag"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-kidney-sling-bag/01.webp",
+          alt: "MALUM | Kidney Sling Bag",
+          width: 1218,
+          height: 1600,
+        },
+        pieceSlugs: ["malum-kidney-sling-bag"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-mono-bag/01.webp",
+          alt: "MALUM | Mono Bag",
+          width: 1084,
+          height: 1451,
+        },
+        pieceSlugs: ["malum-mono-bag"],
       },
     ],
   },
