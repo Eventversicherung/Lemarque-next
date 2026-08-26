@@ -65,15 +65,20 @@ export function BrandLogo({
           priority={priority}
         />
       </span>
-      <span className="relative w-[86%] min-w-0 self-center aspect-[949/96]">
-        <Image
-          src="/brand/wordmark.webp"
-          alt=""
-          fill
-          sizes={s.wordmarkSizes}
-          className="object-contain object-center pointer-events-none"
-          priority={priority}
-        />
+      <span className="flex w-full min-w-0 justify-center">
+        <span
+          className="relative min-w-0 aspect-[949/96]"
+          style={{ width: "86%" }}
+        >
+          <Image
+            src="/brand/wordmark.webp"
+            alt=""
+            fill
+            sizes={s.wordmarkSizes}
+            className="object-contain object-center pointer-events-none"
+            priority={priority}
+          />
+        </span>
       </span>
     </span>
   );
