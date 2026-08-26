@@ -55,7 +55,7 @@ export function BrandLogo({
         className
       )}
     >
-      <span className="relative w-full min-w-0 aspect-[512/519]">
+      <span className="relative w-full min-w-0 aspect-[640/635]">
         <Image
           src="/brand/crest.webp"
           alt=""
@@ -65,20 +65,15 @@ export function BrandLogo({
           priority={priority}
         />
       </span>
-      <span className="flex w-full min-w-0 justify-center">
-        <span
-          className="relative min-w-0 aspect-[949/96]"
-          style={{ width: "86%" }}
-        >
-          <Image
-            src="/brand/wordmark.webp"
-            alt=""
-            fill
-            sizes={s.wordmarkSizes}
-            className="object-contain object-center pointer-events-none"
-            priority={priority}
-          />
-        </span>
+      <span className="relative w-full min-w-0 aspect-[946/92]">
+        <Image
+          src="/brand/wordmark.webp"
+          alt=""
+          fill
+          sizes={s.wordmarkSizes}
+          className="object-contain object-center pointer-events-none"
+          priority={priority}
+        />
       </span>
     </span>
   );
