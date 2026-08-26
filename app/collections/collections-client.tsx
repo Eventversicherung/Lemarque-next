@@ -313,9 +313,9 @@ export function CollectionsPageClient() {
       <div className="absolute top-0 left-0 right-0 z-30">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-linear-to-b from-black/70 via-black/25 to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-linear-to-b from-black/70 via-black/25 to-transparent"
         />
-        <div className="relative flex items-center justify-between px-6 md:px-10 py-5">
+        <div className="relative flex items-center justify-between px-6 md:px-10 py-4 md:py-5">
           <BrandLogo size="sm" priority />
           <Link
             href="/"

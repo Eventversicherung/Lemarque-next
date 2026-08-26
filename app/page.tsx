@@ -54,7 +54,7 @@ function HeroSection() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 0.6, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
-          className="mt-6 text-xs md:text-sm uppercase tracking-[0.3em] text-white/60"
+          className="mt-5 md:mt-6 text-xs md:text-sm uppercase tracking-[0.3em] text-white/60"
         >
           Manufactured 1/1 Attire
         </motion.p>

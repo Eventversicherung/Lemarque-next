@@ -11,32 +11,30 @@ interface BrandLogoProps {
 
 const sizeMap = {
   sm: {
-    root: "gap-2",
-    crest: "size-6",
-    wordmark: "h-[13px] md:h-3.5 aspect-[949/96]",
-    crestSizes: "24px",
-    wordmarkSizes: "140px",
+    width: "w-16 md:w-[4.75rem]",
+    gap: "gap-1",
+    crestSizes: "(max-width: 768px) 64px, 76px",
+    wordmarkSizes: "(max-width: 768px) 64px, 76px",
   },
   md: {
-    root: "gap-2.5",
-    crest: "size-8",
-    wordmark: "h-4 aspect-[949/96]",
-    crestSizes: "32px",
-    wordmarkSizes: "160px",
+    width: "w-24",
+    gap: "gap-1.5",
+    crestSizes: "96px",
+    wordmarkSizes: "96px",
   },
   lg: {
-    root: "gap-3 md:gap-3.5",
-    crest: "size-12 md:size-14",
-    wordmark: "h-7 md:h-8 aspect-[949/96]",
-    crestSizes: "56px",
-    wordmarkSizes: "280px",
+    width: "w-28 md:w-32",
+    gap: "gap-1.5",
+    crestSizes: "(max-width: 768px) 112px, 128px",
+    wordmarkSizes: "(max-width: 768px) 112px, 128px",
   },
   xl: {
-    root: "gap-2.5 sm:gap-5 md:gap-6",
-    crest: "size-9 sm:size-14 md:size-[4.5rem] lg:size-20",
-    wordmark: "h-5 sm:h-8 md:h-11 lg:h-[3.25rem] aspect-[949/96]",
-    crestSizes: "(max-width: 640px) 36px, (max-width: 768px) 56px, 80px",
-    wordmarkSizes: "(max-width: 640px) 200px, (max-width: 768px) 360px, 640px",
+    width: "w-36 sm:w-44 md:w-52 lg:w-60",
+    gap: "gap-1.5 sm:gap-2",
+    crestSizes:
+      "(max-width: 640px) 144px, (max-width: 768px) 176px, (max-width: 1024px) 208px, 240px",
+    wordmarkSizes:
+      "(max-width: 640px) 144px, (max-width: 768px) 176px, (max-width: 1024px) 208px, 240px",
   },
 };
 
@@ -50,9 +48,14 @@ export function BrandLogo({
 
   const mark = (
     <span
-      className={cn("inline-flex items-center select-none", s.root, className)}
+      className={cn(
+        "inline-flex flex-col items-stretch select-none",
+        s.width,
+        s.gap,
+        className
+      )}
     >
-      <span className={cn("relative shrink-0", s.crest)}>
+      <span className="relative w-full aspect-[512/519]">
         <Image
           src="/brand/crest.webp"
           alt=""
@@ -62,13 +65,13 @@ export function BrandLogo({
           priority={priority}
         />
       </span>
-      <span className={cn("relative shrink-0", s.wordmark)}>
+      <span className="relative w-full aspect-[949/96]">
         <Image
           src="/brand/wordmark.webp"
           alt=""
           fill
           sizes={s.wordmarkSizes}
-          className="object-contain object-left pointer-events-none"
+          className="object-contain object-center pointer-events-none"
           priority={priority}
         />
       </span>

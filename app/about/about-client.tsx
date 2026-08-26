@@ -188,7 +188,7 @@ function Vision() {
 
         <ScrollReveal delay={0.2}>
           <div className="mt-10 flex justify-center opacity-80">
-            <BrandLogo size="sm" asLink={false} />
+            <BrandLogo size="md" asLink={false} />
           </div>
         </ScrollReveal>
       </div>
