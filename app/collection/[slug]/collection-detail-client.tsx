@@ -8,7 +8,11 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
-import { type Collection, getRelatedCollections } from "@/lib/collections";
+import {
+  type Collection,
+  getRelatedCollections,
+  hasShoppableLooks,
+} from "@/lib/collections";
 
 function HeroParallax({ collection }: { collection: Collection }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -62,6 +66,18 @@ function CollectionInfo({ collection }: { collection: Collection }) {
           {collection.longDescription}
         </p>
       </ScrollReveal>
+
+      {hasShoppableLooks(collection) && (
+        <ScrollReveal delay={0.1}>
+          <Link
+            href={`/collection/${collection.slug}/shop`}
+            className="mt-8 inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-foreground border border-white/20 px-6 py-3 hover:bg-white hover:text-black transition-colors duration-300"
+          >
+            Shop the Collection
+            <ArrowRight className="w-3 h-3" />
+          </Link>
+        </ScrollReveal>
+      )}
     </section>
   );
 }

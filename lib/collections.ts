@@ -5,6 +5,17 @@ export interface CollectionImage {
   height: number;
 }
 
+/**
+ * One outfit within a shoppable collection: a full editorial "look" photo
+ * plus the individual garments ("pieces") that make it up, referenced by
+ * their `Product.slug` from lib/products.ts. Order in `pieceSlugs` is the
+ * order pieces appear when swiping through the look.
+ */
+export interface Look {
+  image: CollectionImage;
+  pieceSlugs: string[];
+}
+
 export interface Collection {
   slug: string;
   name: string;
@@ -14,11 +25,95 @@ export interface Collection {
   longDescription: string;
   heroImage: CollectionImage;
   images: CollectionImage[];
+  /**
+   * Optional. When present, the collection gets a "Shop the Collection"
+   * immersive experience (scroll = looks, swipe = pieces of that look,
+   * tap a piece = its product detail page). Collections without `looks`
+   * behave exactly as before - this is fully additive and dynamic.
+   */
+  looks?: Look[];
 }
 
 const IMG_BASE = "https://le-marque.com/wp-content/uploads";
 
 export const collections: Collection[] = [
+  {
+    slug: "malum",
+    name: "MALUM",
+    season: "Collection",
+    year: "2026",
+    description:
+      "The newest LEMARQUE collection. Scroll through every look, swipe to shop each piece.",
+    longDescription:
+      "MALUM is the newest chapter for LEMARQUE. This preview uses placeholder imagery while the final campaign photography is being finalized - swap the files in public/collections/malum and fill in lib/products.ts with the real pieces, and everything below updates automatically.",
+    heroImage: {
+      src: "/collections/malum/hero.png",
+      alt: "MALUM Collection | LEMARQUE",
+      width: 1600,
+      height: 1067,
+    },
+    images: [
+      {
+        src: "/collections/malum/look-1.png",
+        alt: "MALUM Collection | look 1",
+        width: 1600,
+        height: 1067,
+      },
+      {
+        src: "/collections/malum/look-2.png",
+        alt: "MALUM Collection | look 2",
+        width: 1600,
+        height: 1067,
+      },
+      {
+        src: "/collections/malum/look-3.png",
+        alt: "MALUM Collection | look 3",
+        width: 1600,
+        height: 1067,
+      },
+    ],
+    looks: [
+      {
+        image: {
+          src: "/collections/malum/look-1.png",
+          alt: "MALUM Collection | Look 01",
+          width: 1600,
+          height: 1067,
+        },
+        pieceSlugs: [
+          "malum-look-1-piece-1",
+          "malum-look-1-piece-2",
+          "malum-look-1-piece-3",
+        ],
+      },
+      {
+        image: {
+          src: "/collections/malum/look-2.png",
+          alt: "MALUM Collection | Look 02",
+          width: 1600,
+          height: 1067,
+        },
+        pieceSlugs: [
+          "malum-look-2-piece-1",
+          "malum-look-2-piece-2",
+          "malum-look-2-piece-3",
+        ],
+      },
+      {
+        image: {
+          src: "/collections/malum/look-3.png",
+          alt: "MALUM Collection | Look 03",
+          width: 1600,
+          height: 1067,
+        },
+        pieceSlugs: [
+          "malum-look-3-piece-1",
+          "malum-look-3-piece-2",
+          "malum-look-3-piece-3",
+        ],
+      },
+    ],
+  },
   {
     slug: "xxv",
     name: "XXV",
@@ -341,6 +436,11 @@ export const collections: Collection[] = [
 
 export function getCollection(slug: string): Collection | undefined {
   return collections.find((c) => c.slug === slug);
+}
+
+/** True when the collection has an immersive, shoppable piece-by-piece experience. */
+export function hasShoppableLooks(collection: Collection): boolean {
+  return Boolean(collection.looks && collection.looks.length > 0);
 }
 
 export function getRelatedCollections(
