@@ -310,14 +310,20 @@ export function CollectionsPageClient() {
       className="fixed inset-0 bg-black overflow-hidden"
     >
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-6 md:px-10 py-5 mix-blend-difference">
-        <BrandLogo size="sm" priority />
-        <Link
-          href="/"
-          className="text-white/60 hover:text-white transition-colors duration-300 text-xs uppercase tracking-[0.2em]"
-        >
-          Close
-        </Link>
+      <div className="absolute top-0 left-0 right-0 z-30">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-linear-to-b from-black/70 via-black/25 to-transparent"
+        />
+        <div className="relative flex items-center justify-between px-6 md:px-10 py-5">
+          <BrandLogo size="sm" priority />
+          <Link
+            href="/"
+            className="text-white/60 hover:text-white transition-colors duration-300 text-xs uppercase tracking-[0.2em]"
+          >
+            Close
+          </Link>
+        </div>
       </div>
 
       {/* Vertical collection stack */}

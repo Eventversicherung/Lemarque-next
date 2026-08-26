@@ -20,8 +20,12 @@ export function Navigation() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 mix-blend-difference">
-        <nav className="flex items-center justify-between px-6 md:px-10 py-5">
+      <header className="fixed top-0 left-0 right-0 z-50">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-linear-to-b from-black/70 via-black/25 to-transparent"
+        />
+        <nav className="relative flex items-center justify-between px-6 md:px-10 py-5">
           <BrandLogo size="sm" priority />
 
           <div className="hidden md:flex items-center gap-8">

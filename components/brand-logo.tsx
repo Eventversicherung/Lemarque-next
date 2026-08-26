@@ -12,10 +12,10 @@ interface BrandLogoProps {
 const sizeMap = {
   sm: {
     root: "gap-2",
-    crest: "size-5 md:size-6",
-    wordmark: "h-3 md:h-[13px] aspect-[949/96]",
+    crest: "size-6",
+    wordmark: "h-[13px] md:h-3.5 aspect-[949/96]",
     crestSizes: "24px",
-    wordmarkSizes: "128px",
+    wordmarkSizes: "140px",
   },
   md: {
     root: "gap-2.5",
