@@ -11,30 +11,30 @@ interface BrandLogoProps {
 
 const sizeMap = {
   sm: {
-    width: "w-16 md:w-[4.75rem]",
+    width: "w-[4.5rem] md:w-20",
     gap: "gap-1",
-    crestSizes: "(max-width: 768px) 64px, 76px",
-    wordmarkSizes: "(max-width: 768px) 64px, 76px",
+    crestSizes: "(max-width: 768px) 72px, 80px",
+    wordmarkSizes: "(max-width: 768px) 72px, 80px",
   },
   md: {
-    width: "w-24",
+    width: "w-28",
     gap: "gap-1.5",
-    crestSizes: "96px",
-    wordmarkSizes: "96px",
+    crestSizes: "112px",
+    wordmarkSizes: "112px",
   },
   lg: {
-    width: "w-28 md:w-32",
+    width: "w-32 md:w-36",
     gap: "gap-1.5",
-    crestSizes: "(max-width: 768px) 112px, 128px",
-    wordmarkSizes: "(max-width: 768px) 112px, 128px",
+    crestSizes: "(max-width: 768px) 128px, 144px",
+    wordmarkSizes: "(max-width: 768px) 128px, 144px",
   },
   xl: {
-    width: "w-36 sm:w-44 md:w-52 lg:w-60",
+    width: "w-48 sm:w-56 md:w-64 lg:w-72",
     gap: "gap-1.5 sm:gap-2",
     crestSizes:
-      "(max-width: 640px) 144px, (max-width: 768px) 176px, (max-width: 1024px) 208px, 240px",
+      "(max-width: 640px) 192px, (max-width: 768px) 224px, (max-width: 1024px) 256px, 288px",
     wordmarkSizes:
-      "(max-width: 640px) 144px, (max-width: 768px) 176px, (max-width: 1024px) 208px, 240px",
+      "(max-width: 640px) 192px, (max-width: 768px) 224px, (max-width: 1024px) 256px, 288px",
   },
 };
 
@@ -49,13 +49,13 @@ export function BrandLogo({
   const mark = (
     <span
       className={cn(
-        "inline-flex flex-col items-stretch select-none",
+        "inline-flex flex-col items-stretch overflow-hidden select-none",
         s.width,
         s.gap,
         className
       )}
     >
-      <span className="relative w-full aspect-[512/519]">
+      <span className="relative w-full min-w-0 aspect-[512/519]">
         <Image
           src="/brand/crest.webp"
           alt=""
@@ -65,7 +65,7 @@ export function BrandLogo({
           priority={priority}
         />
       </span>
-      <span className="relative w-full aspect-[949/96]">
+      <span className="relative w-full min-w-0 aspect-[949/96]">
         <Image
           src="/brand/wordmark.webp"
           alt=""
@@ -83,7 +83,7 @@ export function BrandLogo({
       <Link
         href="/"
         aria-label="LEMARQUE Home"
-        className="inline-flex transition-opacity duration-300 hover:opacity-70"
+        className="inline-flex max-w-full transition-opacity duration-300 hover:opacity-70"
       >
         {mark}
       </Link>
