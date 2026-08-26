@@ -311,7 +311,7 @@ export function CollectionsPageClient() {
     >
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-6 md:px-10 py-5 mix-blend-difference">
-        <BrandLogo size="sm" className="text-white" />
+        <BrandLogo size="sm" priority />
         <Link
           href="/"
           className="text-white/60 hover:text-white transition-colors duration-300 text-xs uppercase tracking-[0.2em]"

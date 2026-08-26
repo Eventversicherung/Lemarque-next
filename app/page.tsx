@@ -7,6 +7,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
+import { BrandLogo } from "@/components/brand-logo";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { collections } from "@/lib/collections";
 
@@ -43,9 +44,10 @@ function HeroSection() {
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
-          className="font-brand text-3xl sm:text-5xl md:text-7xl lg:text-8xl tracking-[0.25em] sm:tracking-[0.4em] md:tracking-[0.5em] text-white text-center"
+          aria-label="LEMARQUE"
+          className="flex justify-center px-2"
         >
-          LEMARQUE
+          <BrandLogo size="xl" asLink={false} priority />
         </motion.h1>
 
         <motion.p

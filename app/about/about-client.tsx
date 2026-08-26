@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
+import { BrandLogo } from "@/components/brand-logo";
 import { ScrollReveal } from "@/components/scroll-reveal";
 
 const IMG_BASE = "https://le-marque.com/wp-content/uploads";
@@ -186,9 +187,9 @@ function Vision() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
-          <p className="mt-8 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            LEMARQUE
-          </p>
+          <div className="mt-10 flex justify-center opacity-80">
+            <BrandLogo size="sm" asLink={false} />
+          </div>
         </ScrollReveal>
       </div>
     </section>

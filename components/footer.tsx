@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/brand-logo";
 import { Separator } from "@/components/ui/separator";
 
 export function Footer() {
@@ -7,9 +8,7 @@ export function Footer() {
       <Separator className="mb-12 bg-white/10" />
       <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
         <div className="space-y-4">
-          <p className="font-brand text-lg tracking-[0.25em] uppercase">
-            LEMARQUE
-          </p>
+          <BrandLogo size="md" />
           <p className="text-xs text-muted-foreground tracking-wider max-w-xs">
             Manufactured 1/1 Attire. Every piece handmade,
             unique, and irreplaceable.
