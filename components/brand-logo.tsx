@@ -65,7 +65,7 @@ export function BrandLogo({
           priority={priority}
         />
       </span>
-      <span className="relative w-full min-w-0 aspect-[949/96]">
+      <span className="relative w-[86%] min-w-0 self-center aspect-[949/96]">
         <Image
           src="/brand/wordmark.webp"
           alt=""
