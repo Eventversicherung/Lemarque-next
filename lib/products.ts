@@ -27,6 +27,15 @@ export interface Product {
   price: string;
   description: string;
   images: ProductImage[];
+  /**
+   * Optional CSS `object-position` for the product detail page's hero
+   * (e.g. "center 20%"). Most cover photos are plain studio shots centered
+   * on the torso, where the default center crop reads fine on a wide hero.
+   * Editorial/environmental cover photos (subject lower in frame, scenery
+   * above) need to be anchored higher so the wide desktop crop doesn't cut
+   * the subject's head off.
+   */
+  heroImagePosition?: string;
 }
 
 export const products: Product[] = [
@@ -369,7 +378,12 @@ export const products: Product[] = [
     price: "Price Upon Request",
     description:
       "A full-length double-breasted coat in brushed cashmere, closed with signature shark-tooth-shaped hardware.",
+    // Editorial cover has the model lower in frame with sky/waves above -
+    // anchor the wide hero crop near the top third so his face doesn't get
+    // cropped off, instead of the default vertical-center crop.
+    heroImagePosition: "center 18%",
     images: [
+      { src: "/collections/malum/editorial/malum-editorial-coat.webp", alt: "MALUM | Otodus Cashmere Coat, stormy shoreline at night", width: 1024, height: 1365 },
       { src: "/collections/malum/products/malum-otodus-cashmere-coat/01.webp", alt: "MALUM | Otodus Cashmere Coat", width: 1197, height: 1600 },
       { src: "/collections/malum/products/malum-otodus-cashmere-coat/02.webp", alt: "MALUM | Otodus Cashmere Coat | detail 2", width: 1197, height: 1600 },
       { src: "/collections/malum/products/malum-otodus-cashmere-coat/03.webp", alt: "MALUM | Otodus Cashmere Coat | detail 3", width: 1195, height: 1600 },

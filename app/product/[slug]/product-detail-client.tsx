@@ -34,6 +34,11 @@ function ProductHero({ product }: { product: Product }) {
           fill
           priority
           className="object-cover"
+          style={
+            product.heroImagePosition
+              ? { objectPosition: product.heroImagePosition }
+              : undefined
+          }
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-linear-to-t from-background via-black/30 to-transparent" />

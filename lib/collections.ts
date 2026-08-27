@@ -134,10 +134,13 @@ export const collections: Collection[] = [
         height: 1600,
       },
       {
-        src: "/collections/malum/products/malum-otodus-cashmere-coat/01.webp",
-        alt: "MALUM Collection | Otodus Cashmere Coat",
-        width: 1197,
-        height: 1600,
+        // Same sea-shore editorial shot used as the collection's browseImage,
+        // reused here as the piece's own cover instead of a plain studio
+        // photo so the browsing feed stays in the collection's visual world.
+        src: "/collections/malum/editorial/malum-editorial-coat.webp",
+        alt: "MALUM Collection | Otodus Cashmere Coat, stormy shoreline at night",
+        width: 1024,
+        height: 1365,
       },
       {
         src: "/collections/malum/products/malum-otodus-trench-coat/01.webp",
@@ -165,10 +168,10 @@ export const collections: Collection[] = [
     looks: [
       {
         image: {
-          src: "/collections/malum/products/malum-otodus-cashmere-coat/01.webp",
-          alt: "MALUM | Otodus Cashmere Coat",
-          width: 1197,
-          height: 1600,
+          src: "/collections/malum/editorial/malum-editorial-coat.webp",
+          alt: "MALUM | Otodus Cashmere Coat, stormy shoreline at night",
+          width: 1024,
+          height: 1365,
         },
         pieceSlugs: ["malum-otodus-cashmere-coat"],
       },
