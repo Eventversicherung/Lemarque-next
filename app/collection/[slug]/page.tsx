@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { collections, getCollection } from "@/lib/collections";
+import { collections, getCollection, hasShoppableLooks } from "@/lib/collections";
 import { CollectionDetailClient } from "./collection-detail-client";
+import { ShoppableCollectionClient } from "./shoppable-collection-client";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -45,6 +46,10 @@ export default async function CollectionPage({ params }: PageProps) {
 
   if (!collection) {
     notFound();
+  }
+
+  if (hasShoppableLooks(collection)) {
+    return <ShoppableCollectionClient collection={collection} />;
   }
 
   return <CollectionDetailClient collection={collection} />;

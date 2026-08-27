@@ -10,10 +10,17 @@ export interface CollectionImage {
  * plus the individual garments ("pieces") that make it up, referenced by
  * their `Product.slug` from lib/products.ts. Order in `pieceSlugs` is the
  * order pieces appear when swiping through the look.
+ *
+ * `published` gates whether the look appears in the shop feed / related-piece
+ * rails. It defaults to hidden (`undefined`/`false`) so a collection's looks
+ * can be added to the data ahead of time and rolled out one at a time by
+ * flipping this to `true` when that look's photography and copy are ready -
+ * "Stück für Stück" rollout without ever deleting or re-typing data.
  */
 export interface Look {
   image: CollectionImage;
   pieceSlugs: string[];
+  published?: boolean;
 }
 
 export interface Collection {
@@ -43,57 +50,35 @@ export const collections: Collection[] = [
     season: "Collection",
     year: "2026",
     description:
-      "The newest LEMARQUE collection. Scroll through every look, swipe to shop each piece.",
+      "The newest LEMARQUE collection. Scroll down to shop each piece as it drops.",
     longDescription:
-      "MALUM is the newest chapter for LEMARQUE: gowns cut like armor, cashmere outerwear closed with shark-tooth hardware, and leather goods built to outlast trend cycles. Scroll through every look, swipe right to shop the piece, and tap through to its own page for the full story.",
+      "MALUM is the newest chapter for LEMARQUE: gowns cut like armor, cashmere outerwear closed with shark-tooth hardware, and leather goods built to outlast trend cycles. Pieces are going live one look at a time - scroll down to shop what's available now.",
+    // Front door only shows what's actually live in the shop right now (the
+    // harness). Swap this back to a hero look once more looks are published.
     heroImage: {
-      src: "/collections/malum/products/malum-black-latex-dress/01.webp",
-      alt: "MALUM Collection | Latex Slit Dress",
-      width: 914,
-      height: 1600,
+      src: "/collections/malum/products/malum-leather-harness/01.webp",
+      alt: "MALUM Collection | Leather Chest Harness",
+      width: 1084,
+      height: 1451,
     },
     images: [
       {
-        src: "/collections/malum/products/malum-siren-gown/01.webp",
-        alt: "MALUM Collection | Siren Gown",
-        width: 960,
-        height: 1600,
-      },
-      {
-        src: "/collections/malum/products/malum-ao-dai-gown/01.webp",
-        alt: "MALUM Collection | Ao Dai Gown",
-        width: 1086,
-        height: 1448,
-      },
-      {
-        src: "/collections/malum/products/malum-cashmere-barathea-suit/01.webp",
-        alt: "MALUM Collection | Cashmere Barathea Suit",
-        width: 1166,
-        height: 1600,
-      },
-      {
-        src: "/collections/malum/products/malum-otodus-cashmere-coat/01.webp",
-        alt: "MALUM Collection | Otodus Cashmere Coat",
-        width: 1197,
-        height: 1600,
-      },
-      {
-        src: "/collections/malum/products/malum-otodus-trench-coat/01.webp",
-        alt: "MALUM Collection | Otodus Trench Coat",
+        src: "/collections/malum/products/malum-leather-harness/02.webp",
+        alt: "MALUM Collection | Leather Chest Harness | detail 2",
         width: 1195,
         height: 1600,
       },
       {
-        src: "/collections/malum/products/malum-bomber-jacket/01.webp",
-        alt: "MALUM Collection | MALUM Bomber Jacket",
-        width: 1086,
-        height: 1448,
+        src: "/collections/malum/products/malum-leather-harness/03.webp",
+        alt: "MALUM Collection | Leather Chest Harness | detail 3",
+        width: 1084,
+        height: 1451,
       },
       {
-        src: "/collections/malum/products/malum-blk-co-dress/01.webp",
-        alt: "MALUM Collection | Cut-Out Knit Dress",
-        width: 1086,
-        height: 1448,
+        src: "/collections/malum/products/malum-leather-harness/04.webp",
+        alt: "MALUM Collection | Leather Chest Harness | detail 4",
+        width: 1084,
+        height: 1451,
       },
     ],
     looks: [
@@ -204,6 +189,7 @@ export const collections: Collection[] = [
           height: 1451,
         },
         pieceSlugs: ["malum-leather-harness"],
+        published: true,
       },
       {
         image: {
@@ -612,9 +598,14 @@ export function getCollection(slug: string): Collection | undefined {
   return collections.find((c) => c.slug === slug);
 }
 
-/** True when the collection has an immersive, shoppable piece-by-piece experience. */
+/** Looks that are live in the shop feed right now (see `Look.published`). */
+export function getShopLooks(collection: Collection): Look[] {
+  return (collection.looks ?? []).filter((look) => look.published);
+}
+
+/** True when the collection has at least one published, shoppable look. */
 export function hasShoppableLooks(collection: Collection): boolean {
-  return Boolean(collection.looks && collection.looks.length > 0);
+  return getShopLooks(collection).length > 0;
 }
 
 export function getRelatedCollections(

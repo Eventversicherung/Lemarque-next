@@ -10,10 +10,10 @@
 // Used by:
 //  - app/collections/collections-client.tsx (groups = collections, slides =
 //    look photos, tapping the "View full collection" link opens the
-//    collection detail page)
-//  - app/collection/[slug]/shop/look-shop-client.tsx (groups = looks within
-//    one collection, slides = every photo of that look's piece, tapping
-//    anywhere opens the piece's product detail page)
+//    collection detail page) - fixed, full-page takeover.
+//  - components/shop-feed.tsx (groups = looks within one collection, slides
+//    = every photo of that look's piece, tapping anywhere opens the piece's
+//    product detail page) - embedded directly on the collection hub page.
 //
 // Keeping this logic in one place means both experiences stay visually and
 // behaviorally consistent, and any future "swipe through things" view (e.g.
@@ -327,12 +327,22 @@ export interface FullScreenSwiperProps {
   header?: ReactNode;
   /** Rendered instead of the swiper when `groups` is empty. */
   emptyState?: ReactNode;
+  /**
+   * "fixed" (default) takes over the whole viewport, used for standalone
+   * full-page takeovers like /collections. "embedded" drops the viewport
+   * pinning so this can sit in normal document flow (e.g. a collection hub
+   * page that scrolls straight from its intro into the shop feed) while
+   * keeping every other behavior - snap feed, peek carousel, indicators -
+   * identical.
+   */
+  variant?: "fixed" | "embedded";
 }
 
 export function FullScreenSwiper({
   groups,
   header,
   emptyState,
+  variant = "fixed",
 }: FullScreenSwiperProps) {
   const [activeGroup, setActiveGroup] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -429,7 +439,12 @@ export function FullScreenSwiper({
   }
 
   return (
-    <div className="fixed inset-0 bg-black overflow-hidden">
+    <div
+      className={cn(
+        "bg-black overflow-hidden",
+        variant === "fixed" ? "fixed inset-0" : "relative w-full h-dvh"
+      )}
+    >
       {header}
 
       {/* Vertical card feed - native scroll-snap so trackpad, touch and
