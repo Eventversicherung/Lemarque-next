@@ -390,6 +390,15 @@ export interface FullScreenSwiperProps {
    * single collection's looks.
    */
   edgeToEdge?: boolean;
+  /**
+   * When true, renders in normal document flow (`relative`, full viewport
+   * height) instead of `fixed inset-0` - for embedding the feed inline
+   * inside a page that scrolls around it (e.g. the collection hub page),
+   * rather than as its own standalone full-screen route. Arrow-key
+   * navigation is scoped to only fire while the embedded section is
+   * actually in view, so it doesn't hijack scrolling elsewhere on the page.
+   */
+  embedded?: boolean;
 }
 
 export function FullScreenSwiper({
@@ -397,6 +406,7 @@ export function FullScreenSwiper({
   header,
   emptyState,
   edgeToEdge = false,
+  embedded = false,
 }: FullScreenSwiperProps) {
   const [activeGroup, setActiveGroup] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -472,6 +482,11 @@ export function FullScreenSwiper({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (embedded) {
+        const rect = containerRef.current?.getBoundingClientRect();
+        const isInView = rect && rect.bottom > 0 && rect.top < window.innerHeight;
+        if (!isInView) return;
+      }
       if (e.key === "ArrowDown") {
         e.preventDefault();
         scrollTo(activeGroup + 1);
@@ -492,14 +507,19 @@ export function FullScreenSwiper({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeGroup, scrollTo]);
+  }, [activeGroup, scrollTo, embedded]);
 
   if (groups.length === 0) {
     return <>{emptyState}</>;
   }
 
   return (
-    <div className="fixed inset-0 bg-black overflow-hidden">
+    <div
+      className={cn(
+        "bg-black overflow-hidden",
+        embedded ? "relative w-full h-dvh" : "fixed inset-0"
+      )}
+    >
       {header}
 
       {/* Vertical card feed - native scroll-snap so trackpad, touch and

@@ -8,19 +8,28 @@ import {
 } from "@/components/full-screen-swiper";
 import { collections } from "@/lib/collections";
 
-const groups: SwiperGroup[] = collections.map((collection) => ({
-  key: collection.slug,
-  media: collection.browseImage ?? collection.heroImage,
-  eyebrow: `${collection.season} ${collection.year}`,
-  title: collection.name,
-  description: collection.description,
-  linkHref: `/collection/${collection.slug}`,
-  linkLabel: "View full collection",
-  items: collection.images.map((image, index) => ({
-    media: image,
-    label: `${collection.name} / Look ${String(index + 1).padStart(2, "0")}`,
-  })),
-}));
+const groups: SwiperGroup[] = collections.map((collection) => {
+  const href = `/collection/${collection.slug}`;
+  return {
+    key: collection.slug,
+    media: collection.browseImage ?? collection.heroImage,
+    eyebrow: `${collection.season} ${collection.year}`,
+    title: collection.name,
+    description: collection.description,
+    // Every photo here (cover + peek images) belongs to the same
+    // collection, so tapping any of them - not just a small text link on
+    // the cover - should open that collection. Embla already distinguishes
+    // a drag/swipe from a tap, so this doesn't fight the horizontal swipe
+    // gesture.
+    coverHref: href,
+    linkLabel: "View full collection",
+    items: collection.images.map((image, index) => ({
+      media: image,
+      label: `${collection.name} / Look ${String(index + 1).padStart(2, "0")}`,
+      href,
+    })),
+  };
+});
 
 function CollectionsHeader() {
   return (

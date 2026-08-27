@@ -8,12 +8,13 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { FullScreenSwiper } from "@/components/full-screen-swiper";
 import {
   type Collection,
   getRelatedCollections,
   hasShoppableLooks,
 } from "@/lib/collections";
-import { getProduct } from "@/lib/products";
+import { buildShopGroups } from "@/lib/shop-groups";
 
 function HeroParallax({ collection }: { collection: Collection }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -113,73 +114,24 @@ function ImageGrid({ collection }: { collection: Collection }) {
   );
 }
 
-// For shoppable collections, the "Looks" gallery IS effectively a shop
-// already (every look photo maps 1:1 to a real, buyable piece) - so instead
-// of a static, non-interactive gallery, show the first few pieces as real
-// shoppable cards right on this page, then hand off to the full immersive
-// swipe-to-shop experience for the rest. No dead-end scrolling required to
-// reach a "Shop" button that duplicates content already on screen.
-const SHOP_PREVIEW_COUNT = 4;
-
-function ShopPreview({ collection }: { collection: Collection }) {
-  const looks = collection.looks ?? [];
-  const previewPieces = looks
-    .slice(0, SHOP_PREVIEW_COUNT)
-    .map((look) => getProduct(look.pieceSlugs[0]))
-    .filter((product): product is NonNullable<typeof product> => Boolean(product));
-
-  if (previewPieces.length === 0) return null;
-
-  const remaining = looks.length - previewPieces.length;
+// For shoppable collections, embed the exact same scroll-to-browse-looks /
+// swipe-to-shop-pieces experience used at /collection/[slug]/shop directly
+// in the page flow, so reaching the shop is "just keep scrolling" instead of
+// a dead-end static gallery + a button to a separate page. `embedded` makes
+// FullScreenSwiper render in normal document flow instead of as a fixed
+// full-viewport overlay.
+function EmbeddedShop({ collection }: { collection: Collection }) {
+  const groups = buildShopGroups(collection);
+  if (groups.length === 0) return null;
 
   return (
-    <section className="px-6 md:px-16 pb-16 md:pb-24">
+    <section className="pb-16 md:pb-24">
       <ScrollReveal>
-        <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-8">
+        <p className="px-6 md:px-16 text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-6">
           Shop the Collection
         </p>
       </ScrollReveal>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-        {previewPieces.map((product, index) => (
-          <ScrollReveal key={product.slug} delay={index * 0.08}>
-            <Link
-              href={`/product/${product.slug}`}
-              className="group block relative aspect-2/3 overflow-hidden bg-neutral-950"
-            >
-              <Image
-                src={product.images[0].src}
-                alt={product.images[0].alt}
-                fill
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-              <div className="absolute inset-x-0 bottom-0 p-3 md:p-5 bg-linear-to-t from-black/80 via-black/10 to-transparent">
-                <p className="text-[10px] md:text-xs uppercase tracking-[0.1em] text-white line-clamp-2 leading-snug">
-                  {product.name}
-                </p>
-                <p className="text-[10px] text-white/50 mt-1">
-                  {product.price}
-                </p>
-              </div>
-            </Link>
-          </ScrollReveal>
-        ))}
-      </div>
-
-      <ScrollReveal delay={0.2}>
-        <div className="mt-10 flex justify-center">
-          <Link
-            href={`/collection/${collection.slug}/shop`}
-            className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-foreground border border-white/20 px-6 py-3 hover:bg-white hover:text-black transition-colors duration-300"
-          >
-            {remaining > 0
-              ? `Shop All ${looks.length} Pieces`
-              : "Shop the Collection"}
-            <ArrowRight className="w-3 h-3" />
-          </Link>
-        </div>
-      </ScrollReveal>
+      <FullScreenSwiper groups={groups} embedded />
     </section>
   );
 }
@@ -264,7 +216,7 @@ export function CollectionDetailClient({
 
         <CollectionInfo collection={collection} />
         {hasShoppableLooks(collection) ? (
-          <ShopPreview collection={collection} />
+          <EmbeddedShop collection={collection} />
         ) : (
           <ImageGrid collection={collection} />
         )}

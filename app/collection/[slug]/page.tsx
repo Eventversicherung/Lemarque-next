@@ -22,12 +22,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const shareImage = collection.ogImage ?? collection.heroImage;
+  // Matches the root layout's own OG title pattern ("LEMARQUE | Manufactured
+  // 1/1 Attire") so the brand's core promise carries into every shared
+  // collection link, not just the homepage.
+  const shareTitle = `${collection.name} | LEMARQUE | Manufactured 1/1 Attire`;
 
   return {
     title: `${collection.name} | ${collection.season} ${collection.year}`,
     description: collection.description,
     openGraph: {
-      title: `${collection.name} | LEMARQUE`,
+      title: shareTitle,
       description: collection.description,
       images: [
         {
@@ -40,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: "summary_large_image",
-      title: `${collection.name} | LEMARQUE`,
+      title: shareTitle,
       description: collection.description,
       images: [shareImage.src],
     },
