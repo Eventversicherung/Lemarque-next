@@ -4,15 +4,11 @@ import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { ScrollReveal } from "@/components/scroll-reveal";
-import {
-  type Collection,
-  getRelatedCollections,
-  hasShoppableLooks,
-} from "@/lib/collections";
+import { type Collection, getRelatedCollections } from "@/lib/collections";
 
 function HeroParallax({ collection }: { collection: Collection }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -63,6 +59,10 @@ function HeroParallax({ collection }: { collection: Collection }) {
   );
 }
 
+// This generic template is used for collections without a live shop feed
+// (see hasShoppableLooks in app/collection/[slug]/page.tsx). Collections
+// with published looks get shoppable-collection-client.tsx instead, whose
+// intro scrolls straight into the embedded shop.
 function CollectionInfo({ collection }: { collection: Collection }) {
   return (
     <section className="px-6 md:px-16 py-16 md:py-24 max-w-4xl">
@@ -112,7 +112,7 @@ function ImageGrid({ collection }: { collection: Collection }) {
   );
 }
 
-function RelatedCollections({ currentSlug }: { currentSlug: string }) {
+export function RelatedCollections({ currentSlug }: { currentSlug: string }) {
   const related = getRelatedCollections(currentSlug, 3);
 
   return (
@@ -170,7 +170,7 @@ export function CollectionDetailClient({
       >
         <HeroParallax collection={collection} />
 
-        <div className="pt-4 px-6 md:px-16 flex flex-wrap items-center justify-between gap-4">
+        <div className="pt-4 px-6 md:px-16">
           <Link
             href="/collections"
             className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300"
@@ -178,16 +178,6 @@ export function CollectionDetailClient({
             <ArrowLeft className="w-3 h-3" />
             Back to Collections
           </Link>
-
-          {hasShoppableLooks(collection) && (
-            <Link
-              href={`/collection/${collection.slug}/shop`}
-              className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-foreground border border-white/20 px-6 py-3 hover:bg-white hover:text-black transition-colors duration-300"
-            >
-              Shop the Collection
-              <ArrowRight className="w-3 h-3" />
-            </Link>
-          )}
         </div>
 
         <CollectionInfo collection={collection} />
