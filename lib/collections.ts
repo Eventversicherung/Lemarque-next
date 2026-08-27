@@ -31,6 +31,14 @@ export interface Collection {
    * its native aspect ratio) don't clip the subject out of frame.
    */
   heroImagePosition?: string;
+  /**
+   * Optional dedicated Open Graph / social-share image (ideally 1200x630
+   * with the logo and collection name already baked in, since most chat
+   * apps render only this image + the page title/description). Falls back
+   * to `heroImage` when not set, which keeps every other collection working
+   * unchanged.
+   */
+  ogImage?: CollectionImage;
   images: CollectionImage[];
   /**
    * Optional. When present, the collection gets a "Shop the Collection"
@@ -53,19 +61,30 @@ export const collections: Collection[] = [
       "The newest LEMARQUE collection. Scroll through every look, swipe to shop each piece.",
     longDescription:
       "MALUM is the newest chapter for LEMARQUE: gowns cut like armor, cashmere outerwear closed with shark-tooth hardware, and leather goods built to outlast trend cycles. Scroll through every look, swipe right to shop the piece, and tap through to its own page for the full story.",
-    // Wide/landscape mood shot (not a product photo) so the Collection Hub
-    // hero fills wide desktop viewports without an awkward crop the way a
+    // Wide/landscape mood shot (aerial view of a stormy sea at night, a
+    // ship's light cutting through the waves) so the Collection Hub hero
+    // fills wide desktop viewports without an awkward crop the way a
     // portrait garment photo would. Generated placeholder - swap for a real
-    // MALUM campaign still whenever one is shot.
+    // MALUM campaign still whenever one is shot. The focal point (glowing
+    // wave crest + light beam) sits near the horizontal center, so the
+    // default centered object-position crops cleanly even on ultra-wide
+    // screens.
     heroImage: {
       src: "/collections/malum/hero/malum-hero-wide.webp",
-      alt: "MALUM Collection",
+      alt: "MALUM Collection | Stormy sea at night",
       width: 1536,
       height: 1024,
     },
-    // Subject sits left-of-center in the source photo; bias the crop left
-    // so ultra-wide viewports don't push it out of frame.
-    heroImagePosition: "32% 45%",
+    // Same generated scene with the LEMARQUE mark and collection name
+    // burned in, sized to the 1200x630 Open Graph standard - chat apps
+    // (WhatsApp, Telegram, iMessage, ...) only ever show this flat image,
+    // never the live page, so the branding needs to live in the pixels.
+    ogImage: {
+      src: "/collections/malum/og/malum-og-image.webp",
+      alt: "MALUM Collection | LEMARQUE",
+      width: 1200,
+      height: 630,
+    },
     images: [
       {
         src: "/collections/malum/products/malum-siren-gown/01.webp",

@@ -21,6 +21,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "Collection Not Found" };
   }
 
+  const shareImage = collection.ogImage ?? collection.heroImage;
+
   return {
     title: `${collection.name} | ${collection.season} ${collection.year}`,
     description: collection.description,
@@ -29,12 +31,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: collection.description,
       images: [
         {
-          url: collection.heroImage.src,
-          width: 1200,
-          height: 630,
-          alt: collection.heroImage.alt,
+          url: shareImage.src,
+          width: shareImage.width,
+          height: shareImage.height,
+          alt: shareImage.alt,
         },
       ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${collection.name} | LEMARQUE`,
+      description: collection.description,
+      images: [shareImage.src],
     },
   };
 }
