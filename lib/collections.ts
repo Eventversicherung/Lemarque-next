@@ -93,24 +93,25 @@ export const collections: Collection[] = [
       width: 1200,
       height: 630,
     },
-    // Same generated visual world as the hero/OG art, but framed on an
-    // actual garment (the Otodus Cashmere Coat) rather than the empty sea -
-    // this is what shows as the collection's "cover" when browsing
+    // Same generated visual world as the hero/OG art (stormy sea at night,
+    // same cold color grade), but framed on an actual garment - a man in
+    // the Otodus Cashmere Coat on a dark shoreline - rather than the empty
+    // sea. This is what shows as the collection's "cover" when browsing
     // /collections, matching how every other collection's cover is a real
     // look photo.
     browseImage: {
       src: "/collections/malum/editorial/malum-editorial-coat.webp",
-      alt: "MALUM Collection | Otodus Cashmere Coat",
-      width: 768,
-      height: 1024,
+      alt: "MALUM Collection | Otodus Cashmere Coat, stormy shoreline at night",
+      width: 1024,
+      height: 1365,
     },
     images: [
       {
-        // Generated editorial shot (dark studio, not flat product-catalog
-        // lighting) so the first thing you see swiping past the cover
+        // Generated editorial shot, same stormy-sea-at-night setting as the
+        // hero/cover, so the first thing you see swiping past the cover
         // isn't a plain white-background product photo.
         src: "/collections/malum/editorial/malum-editorial-latex.webp",
-        alt: "MALUM Collection | Latex Slit Dress, editorial",
+        alt: "MALUM Collection | Latex Slit Dress, stormy shoreline at night",
         width: 1024,
         height: 1365,
       },

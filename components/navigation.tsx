@@ -9,6 +9,7 @@ import { BrandLogo } from "@/components/brand-logo";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
+  { href: "/collection/malum", label: "MALUM" },
   { href: "/collection/xxv", label: "XXV Collection" },
   { href: "/collections", label: "Collections" },
   { href: "/about", label: "About" },
