@@ -40,7 +40,7 @@ export const metadata: Metadata = {
       "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique 1/1 creation.",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.webp",
         width: 1200,
         height: 630,
         alt: "LEMARQUE. Manufactured 1/1 Attire.",
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     title: "LEMARQUE | Manufactured 1/1 Attire",
     description:
       "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique 1/1 creation.",
-    images: ["/og-image.jpg"],
+    images: ["/og-image.webp"],
   },
   robots: {
     index: true,
