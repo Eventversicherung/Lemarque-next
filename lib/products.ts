@@ -10,6 +10,8 @@
 // Nothing else needs to change - pages, links and previews are generated
 // dynamically from this single source of truth.
 
+import { getCollection, getShopLooks } from "@/lib/collections";
+
 export interface ProductImage {
   src: string;
   alt: string;
@@ -462,21 +464,47 @@ export function getProductsByLook(
   );
 }
 
-/** Other pieces from the same look, excluding the current product. */
-export function getLookSiblings(product: Product): Product[] {
-  return getProductsByLook(product.collectionSlug, product.lookIndex).filter(
-    (p) => p.slug !== product.slug
+/**
+ * True when a product belongs to a look that's currently live in the shop
+ * feed. Collections without a `looks` model (e.g. legacy static galleries)
+ * have nothing to gate, so every one of their products is "shoppable".
+ * This keeps "Shop This Look" / "More Pieces" from ever surfacing a piece
+ * whose look hasn't been published yet.
+ */
+function isProductCurrentlyShoppable(product: Product): boolean {
+  const collection = getCollection(product.collectionSlug);
+  if (!collection?.looks) return true;
+  return getShopLooks(collection).some((look) =>
+    look.pieceSlugs.includes(product.slug)
   );
 }
 
+/**
+ * Other pieces from the same look, excluding the current product. A piece
+ * whose own look isn't published yet doesn't get to recommend anything
+ * either - its detail page exists (direct link, not linked from anywhere
+ * yet) but shouldn't act like a normal, live catalog page.
+ */
+export function getLookSiblings(product: Product): Product[] {
+  if (!isProductCurrentlyShoppable(product)) return [];
+  return getProductsByLook(product.collectionSlug, product.lookIndex)
+    .filter((p) => p.slug !== product.slug)
+    .filter(isProductCurrentlyShoppable);
+}
+
 export function getRelatedProducts(product: Product, count = 3): Product[] {
+  if (!isProductCurrentlyShoppable(product)) return [];
+
   const sameCollection = products.filter(
-    (p) => p.collectionSlug === product.collectionSlug && p.slug !== product.slug
+    (p) =>
+      p.collectionSlug === product.collectionSlug &&
+      p.slug !== product.slug &&
+      isProductCurrentlyShoppable(p)
   );
   if (sameCollection.length >= count) return sameCollection.slice(0, count);
 
   const others = products.filter(
-    (p) => p.collectionSlug !== product.collectionSlug
+    (p) => p.collectionSlug !== product.collectionSlug && isProductCurrentlyShoppable(p)
   );
   return [...sameCollection, ...others].slice(0, count);
 }

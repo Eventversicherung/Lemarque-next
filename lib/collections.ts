@@ -10,10 +10,17 @@ export interface CollectionImage {
  * plus the individual garments ("pieces") that make it up, referenced by
  * their `Product.slug` from lib/products.ts. Order in `pieceSlugs` is the
  * order pieces appear when swiping through the look.
+ *
+ * `published` gates whether the look appears in the shop feed / related-piece
+ * rails. It defaults to hidden (`undefined`/`false`) so a collection's looks
+ * can be curated/ranked ahead of time and rolled out one at a time by
+ * flipping this to `true` when that look's photography and copy are ready -
+ * "Stück für Stück" rollout without ever deleting or re-typing data.
  */
 export interface Look {
   image: CollectionImage;
   pieceSlugs: string[];
+  published?: boolean;
 }
 
 export interface Collection {
@@ -66,9 +73,9 @@ export const collections: Collection[] = [
     season: "Collection",
     year: "2026",
     description:
-      "The newest LEMARQUE collection. Scroll through every look, swipe to shop each piece.",
+      "The newest LEMARQUE collection. Scroll down to shop each piece as it drops.",
     longDescription:
-      "MALUM is the newest chapter for LEMARQUE: gowns cut like armor, cashmere outerwear closed with shark-tooth hardware, and leather goods built to outlast trend cycles. Scroll through every look, swipe right to shop the piece, and tap through to its own page for the full story.",
+      "MALUM is the newest chapter for LEMARQUE: gowns cut like armor, cashmere outerwear closed with shark-tooth hardware, and leather goods built to outlast trend cycles. Pieces are going live one look at a time - scroll down to shop what's available now.",
     // Wide/landscape mood shot (aerial view of a stormy sea at night, a
     // ship's light cutting through the waves) so the Collection Hub hero
     // fills wide desktop viewports without an awkward crop the way a
@@ -270,6 +277,7 @@ export const collections: Collection[] = [
           height: 1451,
         },
         pieceSlugs: ["malum-leather-harness"],
+        published: true,
       },
       {
         image: {
@@ -624,9 +632,14 @@ export function getCollection(slug: string): Collection | undefined {
   return collections.find((c) => c.slug === slug);
 }
 
-/** True when the collection has an immersive, shoppable piece-by-piece experience. */
+/** Looks that are live in the shop feed right now (see `Look.published`). */
+export function getShopLooks(collection: Collection): Look[] {
+  return (collection.looks ?? []).filter((look) => look.published);
+}
+
+/** True when the collection has at least one published, shoppable look. */
 export function hasShoppableLooks(collection: Collection): boolean {
-  return Boolean(collection.looks && collection.looks.length > 0);
+  return getShopLooks(collection).length > 0;
 }
 
 export function getRelatedCollections(
