@@ -162,6 +162,7 @@ function GroupSlides({
   isActive,
   isNear,
   onEmblaApi,
+  priority = false,
 }: {
   group: SwiperGroup;
   /** This is the card currently snapped into view. */
@@ -169,6 +170,13 @@ function GroupSlides({
   /** Adjacent card - keep images eager/decoded so the peek never looks blank. */
   isNear: boolean;
   onEmblaApi?: (api: ReturnType<typeof useEmblaCarousel>[1]) => void;
+  /**
+   * Whether this card's cover image should get `priority` (eager, above
+   * network queue). Kept separate from `isActive` because embedded/stacked
+   * usage marks every card "active" (so its horizontal swipe always works),
+   * which would otherwise mark every card's cover as priority at once.
+   */
+  priority?: boolean;
 }) {
   const allSlides: SwiperSlideItem[] = useMemo(
     () => [{ media: group.media, href: group.coverHref }, ...group.items],
@@ -236,7 +244,7 @@ function GroupSlides({
               >
                 {shouldRenderMedia &&
                   (() => {
-                    const isPriority = isActive && index === 0;
+                    const isPriority = priority && index === 0;
                     return (
                       <Image
                         src={slide.media.src}
@@ -438,7 +446,11 @@ export function FullScreenSwiper({
   // over the majority of the viewport.
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || groups.length === 0) return;
+    // Embedded/stacked mode has no snap-scroll container to observe against
+    // (cards are simply in normal page flow) and every card is always
+    // "active", so the focus-dimming + winner-take-all active tracking
+    // below only applies to the fixed, fullscreen feed.
+    if (!container || groups.length === 0 || embedded) return;
 
     ratiosRef.current = groups.map(() => 0);
 
@@ -478,15 +490,16 @@ export function FullScreenSwiper({
     // Only the count matters for (re)wiring the observer; group identity
     // changes don't need to reset which card is currently active.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groups.length]);
+  }, [groups.length, embedded]);
 
   useEffect(() => {
+    // Embedded/stacked cards rely entirely on normal page + native scroll;
+    // the custom arrow-key paging below is specific to the fixed fullscreen
+    // feed and would otherwise swallow ArrowUp/ArrowDown while an embedded
+    // section is on screen, breaking ordinary page scrolling with the
+    // keyboard.
+    if (embedded) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (embedded) {
-        const rect = containerRef.current?.getBoundingClientRect();
-        const isInView = rect && rect.bottom > 0 && rect.top < window.innerHeight;
-        if (!isInView) return;
-      }
       if (e.key === "ArrowDown") {
         e.preventDefault();
         scrollTo(activeGroup + 1);
@@ -513,13 +526,33 @@ export function FullScreenSwiper({
     return <>{emptyState}</>;
   }
 
+  // Embedded mode: a plain vertical stack in normal document flow, sized to
+  // the page's own content width (matching the sections above/below it)
+  // instead of the fixed, edge-inset "floating card" used by the immersive
+  // full-screen feed. No scroll-snap, no independent scroll container, no
+  // focus-dimming - the page's native scroll carries the user through every
+  // look, and each card's horizontal swipe (to browse that look's pieces)
+  // stays fully interactive throughout, not just on whichever one happens
+  // to be "active".
+  if (embedded) {
+    return (
+      <div className="w-full px-6 md:px-16">
+        <div className="flex flex-col gap-4 md:gap-6">
+          {groups.map((group, index) => (
+            <div
+              key={group.key}
+              className="relative w-full h-[75vh] sm:h-[80vh] md:h-[85vh] overflow-hidden bg-neutral-950 rounded-[10px] md:rounded-[14px]"
+            >
+              <GroupSlides group={group} isActive isNear priority={index === 0} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={cn(
-        "bg-black overflow-hidden",
-        embedded ? "relative w-full h-dvh" : "fixed inset-0"
-      )}
-    >
+    <div className="bg-black overflow-hidden fixed inset-0">
       {header}
 
       {/* Vertical card feed - native scroll-snap so trackpad, touch and
@@ -552,6 +585,7 @@ export function FullScreenSwiper({
                 isActive={isActive}
                 isNear={isNear}
                 onEmblaApi={isActive ? handleEmblaApi : undefined}
+                priority={isActive}
               />
             </div>
           );
