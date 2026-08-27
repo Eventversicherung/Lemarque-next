@@ -71,18 +71,6 @@ function CollectionInfo({ collection }: { collection: Collection }) {
           {collection.longDescription}
         </p>
       </ScrollReveal>
-
-      {hasShoppableLooks(collection) && (
-        <ScrollReveal delay={0.1}>
-          <Link
-            href={`/collection/${collection.slug}/shop`}
-            className="mt-8 inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-foreground border border-white/20 px-6 py-3 hover:bg-white hover:text-black transition-colors duration-300"
-          >
-            Shop the Collection
-            <ArrowRight className="w-3 h-3" />
-          </Link>
-        </ScrollReveal>
-      )}
     </section>
   );
 }
@@ -182,7 +170,7 @@ export function CollectionDetailClient({
       >
         <HeroParallax collection={collection} />
 
-        <div className="pt-4 px-6 md:px-16">
+        <div className="pt-4 px-6 md:px-16 flex flex-wrap items-center justify-between gap-4">
           <Link
             href="/collections"
             className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300"
@@ -190,6 +178,16 @@ export function CollectionDetailClient({
             <ArrowLeft className="w-3 h-3" />
             Back to Collections
           </Link>
+
+          {hasShoppableLooks(collection) && (
+            <Link
+              href={`/collection/${collection.slug}/shop`}
+              className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-foreground border border-white/20 px-6 py-3 hover:bg-white hover:text-black transition-colors duration-300"
+            >
+              Shop the Collection
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          )}
         </div>
 
         <CollectionInfo collection={collection} />

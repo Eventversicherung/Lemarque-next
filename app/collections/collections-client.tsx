@@ -10,7 +10,7 @@ import { collections } from "@/lib/collections";
 
 const groups: SwiperGroup[] = collections.map((collection) => ({
   key: collection.slug,
-  media: collection.heroImage,
+  media: collection.browseImage ?? collection.heroImage,
   eyebrow: `${collection.season} ${collection.year}`,
   title: collection.name,
   description: collection.description,
@@ -43,5 +43,7 @@ function CollectionsHeader() {
 }
 
 export function CollectionsPageClient() {
-  return <FullScreenSwiper groups={groups} header={<CollectionsHeader />} />;
+  return (
+    <FullScreenSwiper groups={groups} header={<CollectionsHeader />} edgeToEdge />
+  );
 }

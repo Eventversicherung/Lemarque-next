@@ -39,6 +39,14 @@ export interface Collection {
    * unchanged.
    */
   ogImage?: CollectionImage;
+  /**
+   * Optional dedicated cover for the /collections overview swiper. Falls
+   * back to `heroImage`. Useful when the Hub-page hero is an atmospheric
+   * mood shot (no garment in frame) but the browse tile should still show
+   * an actual piece from the collection, the way every other collection's
+   * `heroImage` already does double duty as both.
+   */
+  browseImage?: CollectionImage;
   images: CollectionImage[];
   /**
    * Optional. When present, the collection gets a "Shop the Collection"
@@ -85,7 +93,27 @@ export const collections: Collection[] = [
       width: 1200,
       height: 630,
     },
+    // Same generated visual world as the hero/OG art, but framed on an
+    // actual garment (the Otodus Cashmere Coat) rather than the empty sea -
+    // this is what shows as the collection's "cover" when browsing
+    // /collections, matching how every other collection's cover is a real
+    // look photo.
+    browseImage: {
+      src: "/collections/malum/editorial/malum-editorial-coat.webp",
+      alt: "MALUM Collection | Otodus Cashmere Coat",
+      width: 768,
+      height: 1024,
+    },
     images: [
+      {
+        // Generated editorial shot (dark studio, not flat product-catalog
+        // lighting) so the first thing you see swiping past the cover
+        // isn't a plain white-background product photo.
+        src: "/collections/malum/editorial/malum-editorial-latex.webp",
+        alt: "MALUM Collection | Latex Slit Dress, editorial",
+        width: 1024,
+        height: 1365,
+      },
       {
         src: "/collections/malum/products/malum-siren-gown/01.webp",
         alt: "MALUM Collection | Siren Gown",

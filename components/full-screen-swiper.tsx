@@ -73,6 +73,38 @@ export interface SwiperGroup {
   items: SwiperSlideItem[];
 }
 
+// Wide letter-spacing reads as intentional and premium on a short word like
+// "MALUM" or "XXV", but the exact same tracking on a real product name like
+// "Halfsleeve Knit & Suiting Trousers" spaces every letter apart until the
+// word is unreadable and the block wraps across half the card. Scale both
+// size and tracking down as the title gets longer instead of using one fixed
+// value for every group.
+function getTitleScale(title: string): { size: string; tracking: string } {
+  const length = title.length;
+  if (length <= 8) {
+    return {
+      size: "text-2xl md:text-4xl lg:text-5xl",
+      tracking: "tracking-[0.25em]",
+    };
+  }
+  if (length <= 14) {
+    return {
+      size: "text-xl md:text-3xl lg:text-4xl",
+      tracking: "tracking-[0.1em]",
+    };
+  }
+  if (length <= 24) {
+    return {
+      size: "text-lg md:text-2xl lg:text-3xl",
+      tracking: "tracking-[0.04em]",
+    };
+  }
+  return {
+    size: "text-base md:text-xl lg:text-2xl",
+    tracking: "tracking-normal",
+  };
+}
+
 function useGroupPreloader(groups: SwiperGroup[], activeIndex: number) {
   const preloadedGroups = useRef(new Set<number>());
 
@@ -234,10 +266,16 @@ function GroupSlides({
                           ease: [0.25, 0.1, 0.25, 1],
                         }}
                       >
-                        <p className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-white/50 mb-2">
+                        <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-white/50 mb-1.5">
                           {group.eyebrow}
                         </p>
-                        <h2 className="font-brand text-2xl md:text-4xl lg:text-5xl tracking-[0.3em] text-white mb-2">
+                        <h2
+                          className={cn(
+                            "font-brand text-white mb-1.5 leading-tight",
+                            getTitleScale(group.title).size,
+                            getTitleScale(group.title).tracking
+                          )}
+                        >
                           {group.title}
                         </h2>
                         {group.description && (
@@ -343,12 +381,22 @@ export interface FullScreenSwiperProps {
   header?: ReactNode;
   /** Rendered instead of the swiper when `groups` is empty. */
   emptyState?: ReactNode;
+  /**
+   * When true, cards run the full viewport width with square corners,
+   * matching the rest of the site's full-bleed editorial pages (e.g.
+   * /collections, browsing between collections). When false (default),
+   * cards are capped to a max-width and float as rounded tiles in the
+   * surrounding black - the "Instagram feed" treatment used for shopping a
+   * single collection's looks.
+   */
+  edgeToEdge?: boolean;
 }
 
 export function FullScreenSwiper({
   groups,
   header,
   emptyState,
+  edgeToEdge = false,
 }: FullScreenSwiperProps) {
   const [activeGroup, setActiveGroup] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -472,7 +520,12 @@ export function FullScreenSwiper({
                 sectionRefs.current[index] = el;
               }}
               data-index={index}
-              className="feed-card relative w-full max-w-none md:max-w-5xl lg:max-w-6xl xl:max-w-7xl shrink-0 h-[95dvh] md:h-[94dvh] snap-start snap-always rounded-[10px] md:rounded-[14px] overflow-hidden bg-neutral-950"
+              className={cn(
+                "feed-card relative w-full shrink-0 h-[95dvh] md:h-[94dvh] snap-start snap-always overflow-hidden bg-neutral-950",
+                edgeToEdge
+                  ? "max-w-none rounded-none"
+                  : "max-w-none md:max-w-5xl lg:max-w-6xl xl:max-w-7xl rounded-[10px] md:rounded-[14px]"
+              )}
             >
               <GroupSlides
                 group={group}
