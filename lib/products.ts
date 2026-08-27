@@ -34,7 +34,7 @@ export const products: Product[] = [
     slug: "malum-ao-dai-gown",
     name: "Ao Dai Gown",
     collectionSlug: "malum",
-    lookIndex: 2,
+    lookIndex: 4,
     category: "Gown",
     price: "Price Upon Request",
     description:
@@ -52,7 +52,7 @@ export const products: Product[] = [
     slug: "malum-black-latex-dress",
     name: "Latex Slit Dress",
     collectionSlug: "malum",
-    lookIndex: 1,
+    lookIndex: 6,
     category: "Dress",
     price: "Price Upon Request",
     description:
@@ -73,7 +73,7 @@ export const products: Product[] = [
     slug: "malum-blk-co-dress",
     name: "Cut-Out Knit Dress",
     collectionSlug: "malum",
-    lookIndex: 3,
+    lookIndex: 7,
     category: "Dress",
     price: "Price Upon Request",
     description:
@@ -92,7 +92,7 @@ export const products: Product[] = [
     slug: "malum-bomber-jacket",
     name: "MALUM Bomber Jacket",
     collectionSlug: "malum",
-    lookIndex: 7,
+    lookIndex: 2,
     category: "Jacket",
     price: "Price Upon Request",
     description:
@@ -127,7 +127,7 @@ export const products: Product[] = [
     slug: "malum-cashmere-barathea-suit",
     name: "Cashmere Barathea Suit",
     collectionSlug: "malum",
-    lookIndex: 4,
+    lookIndex: 3,
     category: "Suit",
     price: "Price Upon Request",
     description:
@@ -188,7 +188,10 @@ export const products: Product[] = [
     slug: "malum-fish-leather-heels",
     name: "Fish Leather Heels",
     collectionSlug: "malum",
-    lookIndex: 12,
+    // Not part of the current curated MALUM look ranking; kept as a
+    // standalone product page (still reachable via /product/[slug]) but
+    // excluded from the shop feed and look-sibling matching.
+    lookIndex: -1,
     category: "Heels",
     price: "Price Upon Request",
     description:
@@ -206,7 +209,8 @@ export const products: Product[] = [
     slug: "malum-nubuk-heels",
     name: "Nubuk Heels",
     collectionSlug: "malum",
-    lookIndex: 13,
+    // Excluded from the current curated MALUM look ranking (see note above).
+    lookIndex: -1,
     category: "Heels",
     price: "Price Upon Request",
     description:
@@ -224,7 +228,8 @@ export const products: Product[] = [
     slug: "malum-nubuk-matt-heels",
     name: "Nubuk Matt Heels",
     collectionSlug: "malum",
-    lookIndex: 14,
+    // Excluded from the current curated MALUM look ranking (see note above).
+    lookIndex: -1,
     category: "Heels",
     price: "Price Upon Request",
     description:
@@ -242,7 +247,8 @@ export const products: Product[] = [
     slug: "malum-lumos-bag-black-fish",
     name: "Lumos Bag — Black Fish",
     collectionSlug: "malum",
-    lookIndex: 15,
+    // Excluded from the current curated MALUM look ranking (see note above).
+    lookIndex: -1,
     category: "Handbag",
     price: "Price Upon Request",
     description:
@@ -262,7 +268,8 @@ export const products: Product[] = [
     slug: "malum-lumos-bag-black-nubuk",
     name: "Lumos Bag — Black Nubuk",
     collectionSlug: "malum",
-    lookIndex: 16,
+    // Excluded from the current curated MALUM look ranking (see note above).
+    lookIndex: -1,
     category: "Handbag",
     price: "Price Upon Request",
     description:
@@ -282,7 +289,8 @@ export const products: Product[] = [
     slug: "malum-lumos-bag-creme-fish",
     name: "Lumos Bag — Crème Fish",
     collectionSlug: "malum",
-    lookIndex: 17,
+    // Excluded from the current curated MALUM look ranking (see note above).
+    lookIndex: -1,
     category: "Handbag",
     price: "Price Upon Request",
     description:
@@ -302,7 +310,7 @@ export const products: Product[] = [
     slug: "malum-mini-handbag",
     name: "Mini Handbag",
     collectionSlug: "malum",
-    lookIndex: 18,
+    lookIndex: 14,
     category: "Handbag",
     price: "Price Upon Request",
     description:
@@ -322,7 +330,7 @@ export const products: Product[] = [
     slug: "malum-kidney-sling-bag",
     name: "Kidney Sling Bag",
     collectionSlug: "malum",
-    lookIndex: 19,
+    lookIndex: 13,
     category: "Handbag",
     price: "Price Upon Request",
     description:
@@ -339,7 +347,7 @@ export const products: Product[] = [
     slug: "malum-mono-bag",
     name: "Mono Bag",
     collectionSlug: "malum",
-    lookIndex: 20,
+    lookIndex: 12,
     category: "Handbag",
     price: "Price Upon Request",
     description:
@@ -356,7 +364,7 @@ export const products: Product[] = [
     slug: "malum-otodus-cashmere-coat",
     name: "Otodus Cashmere Coat",
     collectionSlug: "malum",
-    lookIndex: 5,
+    lookIndex: 0,
     category: "Coat",
     price: "Price Upon Request",
     description:
@@ -376,7 +384,7 @@ export const products: Product[] = [
     slug: "malum-otodus-trench-coat",
     name: "Otodus Trench Coat",
     collectionSlug: "malum",
-    lookIndex: 6,
+    lookIndex: 1,
     category: "Coat",
     price: "Price Upon Request",
     description:
@@ -394,7 +402,7 @@ export const products: Product[] = [
     slug: "malum-siren-gown",
     name: "Siren Gown",
     collectionSlug: "malum",
-    lookIndex: 0,
+    lookIndex: 5,
     category: "Gown",
     price: "Price Upon Request",
     description:

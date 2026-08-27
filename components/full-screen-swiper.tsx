@@ -191,7 +191,7 @@ function GroupSlides({
             const isCover = index === 0;
             const isFocused = current === index;
             const slideOuterClass =
-              "relative flex-[0_0_86%] sm:flex-[0_0_74%] md:flex-[0_0_62%] min-w-0 h-full px-1 md:px-1.5";
+              "relative flex-[0_0_88%] sm:flex-[0_0_80%] md:flex-[0_0_66%] lg:flex-[0_0_60%] xl:flex-[0_0_54%] min-w-0 h-full px-1 md:px-1.5";
 
             const content = (
               <div
@@ -214,7 +214,7 @@ function GroupSlides({
                           ? { priority: true }
                           : { loading: "lazy" as const })}
                         className="object-cover"
-                        sizes="(max-width: 768px) 86vw, (max-width: 1024px) 74vw, 62vw"
+                        sizes="(max-width: 768px) 88vw, (max-width: 1024px) 66vw, 54vw"
                       />
                     );
                   })()}
@@ -288,6 +288,22 @@ function GroupSlides({
           })}
         </div>
       </div>
+
+      {/* Edge vignette - darkens the peeking neighbor slides near the card
+          boundary so the eye is pulled to the sharp, centered slide even
+          before the blur/opacity treatment on the slide itself kicks in. */}
+      {allSlides.length > 1 && (
+        <>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 left-0 w-[16%] md:w-[20%] z-[6] bg-gradient-to-r from-black/80 to-transparent"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 right-0 w-[16%] md:w-[20%] z-[6] bg-gradient-to-l from-black/80 to-transparent"
+          />
+        </>
+      )}
 
       {/* Horizontal progress dots */}
       {allSlides.length > 1 && (
@@ -371,9 +387,15 @@ export function FullScreenSwiper({
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const indexAttr = (entry.target as HTMLElement).dataset.index;
+          const target = entry.target as HTMLElement;
+          const indexAttr = target.dataset.index;
           if (indexAttr === undefined) return;
           ratiosRef.current[Number(indexAttr)] = entry.intersectionRatio;
+          // Drive the card's focus blur/dim directly off the observed
+          // ratio (continuous, no re-render) so it reads as a smooth
+          // "coming into focus" as the card scrolls toward center, rather
+          // than a hard snap the instant it becomes the active card.
+          target.style.setProperty("--focus", String(entry.intersectionRatio));
         });
 
         let maxIndex = 0;
@@ -438,7 +460,7 @@ export function FullScreenSwiper({
           peeks in at the bottom as a hint that there's more below. */}
       <div
         ref={containerRef}
-        className="no-scrollbar h-dvh w-full overflow-y-auto snap-y snap-mandatory flex flex-col items-center gap-3 md:gap-4 px-0 pt-[env(safe-area-inset-top)]"
+        className="no-scrollbar h-dvh w-full overflow-y-auto snap-y snap-mandatory flex flex-col items-center gap-2 md:gap-3 px-0 pt-[env(safe-area-inset-top)]"
       >
         {groups.map((group, index) => {
           const isActive = index === activeGroup;
@@ -450,7 +472,7 @@ export function FullScreenSwiper({
                 sectionRefs.current[index] = el;
               }}
               data-index={index}
-              className="relative w-full max-w-none md:max-w-4xl shrink-0 h-[90dvh] md:h-[88dvh] snap-start snap-always rounded-[22px] md:rounded-[32px] overflow-hidden bg-neutral-950"
+              className="feed-card relative w-full max-w-none md:max-w-5xl lg:max-w-6xl xl:max-w-7xl shrink-0 h-[95dvh] md:h-[94dvh] snap-start snap-always rounded-[10px] md:rounded-[14px] overflow-hidden bg-neutral-950"
             >
               <GroupSlides
                 group={group}
@@ -463,7 +485,7 @@ export function FullScreenSwiper({
         })}
         {/* Bottom spacer so the last card can fully snap into place above
             the peek zone instead of clipping against the viewport edge. */}
-        <div aria-hidden className="shrink-0 h-[8dvh] md:h-[10dvh] w-full" />
+        <div aria-hidden className="shrink-0 h-[5dvh] w-full" />
       </div>
 
       {/* Group indicator (right side) */}

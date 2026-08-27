@@ -175,3 +175,14 @@
   width: 0;
   height: 0;
 }
+
+/* Vertical feed cards (fullscreen swiper): --focus is set imperatively from
+   the IntersectionObserver ratio in components/full-screen-swiper.tsx, so
+   the peeking card at the bottom smoothly softens/dims as it scrolls toward
+   center instead of hard-snapping into focus. */
+.feed-card {
+  --focus: 1;
+  filter: blur(calc((1 - var(--focus)) * 14px));
+  opacity: calc(0.45 + var(--focus) * 0.55);
+  transition: filter 120ms linear, opacity 120ms linear;
+}

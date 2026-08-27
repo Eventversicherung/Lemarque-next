@@ -56,7 +56,7 @@ export function LookShopClient({ collection }: { collection: Collection }) {
         : `${collection.name} / Scroll for more looks`,
       title: singlePiece ? singlePiece.name : `Look ${String(index + 1).padStart(2, "0")}`,
       description: singlePiece
-        ? `${singlePiece.category} \u2014 ${singlePiece.price}`
+        ? `${singlePiece.category} \u00b7 ${singlePiece.price}`
         : "Swipe right to shop every piece from this look.",
       coverHref: singlePiece ? `/product/${singlePiece.slug}` : undefined,
       linkLabel: singlePiece ? "View full details" : undefined,
@@ -68,7 +68,7 @@ export function LookShopClient({ collection }: { collection: Collection }) {
           }))
         : pieces.map((product) => ({
             media: product.images[0],
-            label: `${product.category.toUpperCase()} \u2014 ${product.name}`,
+            label: `${product.category.toUpperCase()} \u00b7 ${product.name}`,
             href: `/product/${product.slug}`,
           })),
     };

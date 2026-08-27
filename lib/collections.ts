@@ -24,6 +24,13 @@ export interface Collection {
   description: string;
   longDescription: string;
   heroImage: CollectionImage;
+  /**
+   * Optional CSS `object-position` for the hero image (e.g. "30% center").
+   * Useful for landscape hero shots whose subject isn't centered, so wide
+   * desktop viewports (which crop the image's sides more aggressively than
+   * its native aspect ratio) don't clip the subject out of frame.
+   */
+  heroImagePosition?: string;
   images: CollectionImage[];
   /**
    * Optional. When present, the collection gets a "Shop the Collection"
@@ -46,12 +53,19 @@ export const collections: Collection[] = [
       "The newest LEMARQUE collection. Scroll through every look, swipe to shop each piece.",
     longDescription:
       "MALUM is the newest chapter for LEMARQUE: gowns cut like armor, cashmere outerwear closed with shark-tooth hardware, and leather goods built to outlast trend cycles. Scroll through every look, swipe right to shop the piece, and tap through to its own page for the full story.",
+    // Wide/landscape mood shot (not a product photo) so the Collection Hub
+    // hero fills wide desktop viewports without an awkward crop the way a
+    // portrait garment photo would. Generated placeholder - swap for a real
+    // MALUM campaign still whenever one is shot.
     heroImage: {
-      src: "/collections/malum/products/malum-black-latex-dress/01.webp",
-      alt: "MALUM Collection | Latex Slit Dress",
-      width: 914,
-      height: 1600,
+      src: "/collections/malum/hero/malum-hero-wide.webp",
+      alt: "MALUM Collection",
+      width: 1536,
+      height: 1024,
     },
+    // Subject sits left-of-center in the source photo; bias the crop left
+    // so ultra-wide viewports don't push it out of frame.
+    heroImagePosition: "32% 45%",
     images: [
       {
         src: "/collections/malum/products/malum-siren-gown/01.webp",
@@ -96,52 +110,11 @@ export const collections: Collection[] = [
         height: 1448,
       },
     ],
+    // Curated shop order (client-approved ranking). Products not in this
+    // ranking (heels, Lumos bags) stay in lib/products.ts with
+    // `lookIndex: -1` - their own /product/[slug] pages keep working, they
+    // just don't appear in this swipeable feed.
     looks: [
-      {
-        image: {
-          src: "/collections/malum/products/malum-siren-gown/01.webp",
-          alt: "MALUM | Siren Gown",
-          width: 960,
-          height: 1600,
-        },
-        pieceSlugs: ["malum-siren-gown"],
-      },
-      {
-        image: {
-          src: "/collections/malum/products/malum-black-latex-dress/01.webp",
-          alt: "MALUM | Latex Slit Dress",
-          width: 914,
-          height: 1600,
-        },
-        pieceSlugs: ["malum-black-latex-dress"],
-      },
-      {
-        image: {
-          src: "/collections/malum/products/malum-ao-dai-gown/01.webp",
-          alt: "MALUM | Ao Dai Gown",
-          width: 1086,
-          height: 1448,
-        },
-        pieceSlugs: ["malum-ao-dai-gown"],
-      },
-      {
-        image: {
-          src: "/collections/malum/products/malum-blk-co-dress/01.webp",
-          alt: "MALUM | Cut-Out Knit Dress",
-          width: 1086,
-          height: 1448,
-        },
-        pieceSlugs: ["malum-blk-co-dress"],
-      },
-      {
-        image: {
-          src: "/collections/malum/products/malum-cashmere-barathea-suit/01.webp",
-          alt: "MALUM | Cashmere Barathea Suit",
-          width: 1166,
-          height: 1600,
-        },
-        pieceSlugs: ["malum-cashmere-barathea-suit"],
-      },
       {
         image: {
           src: "/collections/malum/products/malum-otodus-cashmere-coat/01.webp",
@@ -168,6 +141,51 @@ export const collections: Collection[] = [
           height: 1448,
         },
         pieceSlugs: ["malum-bomber-jacket"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-cashmere-barathea-suit/01.webp",
+          alt: "MALUM | Cashmere Barathea Suit",
+          width: 1166,
+          height: 1600,
+        },
+        pieceSlugs: ["malum-cashmere-barathea-suit"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-ao-dai-gown/01.webp",
+          alt: "MALUM | Ao Dai Gown",
+          width: 1086,
+          height: 1448,
+        },
+        pieceSlugs: ["malum-ao-dai-gown"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-siren-gown/01.webp",
+          alt: "MALUM | Siren Gown",
+          width: 960,
+          height: 1600,
+        },
+        pieceSlugs: ["malum-siren-gown"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-black-latex-dress/01.webp",
+          alt: "MALUM | Latex Slit Dress",
+          width: 914,
+          height: 1600,
+        },
+        pieceSlugs: ["malum-black-latex-dress"],
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-blk-co-dress/01.webp",
+          alt: "MALUM | Cut-Out Knit Dress",
+          width: 1086,
+          height: 1448,
+        },
+        pieceSlugs: ["malum-blk-co-dress"],
       },
       {
         image: {
@@ -207,66 +225,12 @@ export const collections: Collection[] = [
       },
       {
         image: {
-          src: "/collections/malum/products/malum-fish-leather-heels/01.webp",
-          alt: "MALUM | Fish Leather Heels",
-          width: 1144,
-          height: 1375,
-        },
-        pieceSlugs: ["malum-fish-leather-heels"],
-      },
-      {
-        image: {
-          src: "/collections/malum/products/malum-nubuk-heels/01.webp",
-          alt: "MALUM | Nubuk Heels",
-          width: 1122,
-          height: 1402,
-        },
-        pieceSlugs: ["malum-nubuk-heels"],
-      },
-      {
-        image: {
-          src: "/collections/malum/products/malum-nubuk-matt-heels/01.webp",
-          alt: "MALUM | Nubuk Matt Heels",
-          width: 1122,
-          height: 1402,
-        },
-        pieceSlugs: ["malum-nubuk-matt-heels"],
-      },
-      {
-        image: {
-          src: "/collections/malum/products/malum-lumos-bag-black-fish/01.webp",
-          alt: "MALUM | Lumos Bag \u2014 Black Fish",
-          width: 1323,
-          height: 1189,
-        },
-        pieceSlugs: ["malum-lumos-bag-black-fish"],
-      },
-      {
-        image: {
-          src: "/collections/malum/products/malum-lumos-bag-black-nubuk/01.webp",
-          alt: "MALUM | Lumos Bag \u2014 Black Nubuk",
+          src: "/collections/malum/products/malum-mono-bag/01.webp",
+          alt: "MALUM | Mono Bag",
           width: 1084,
           height: 1451,
         },
-        pieceSlugs: ["malum-lumos-bag-black-nubuk"],
-      },
-      {
-        image: {
-          src: "/collections/malum/products/malum-lumos-bag-creme-fish/01.webp",
-          alt: "MALUM | Lumos Bag \u2014 Cr\u00e8me Fish",
-          width: 1114,
-          height: 1412,
-        },
-        pieceSlugs: ["malum-lumos-bag-creme-fish"],
-      },
-      {
-        image: {
-          src: "/collections/malum/products/malum-mini-handbag/01.webp",
-          alt: "MALUM | Mini Handbag",
-          width: 1278,
-          height: 1231,
-        },
-        pieceSlugs: ["malum-mini-handbag"],
+        pieceSlugs: ["malum-mono-bag"],
       },
       {
         image: {
@@ -279,12 +243,12 @@ export const collections: Collection[] = [
       },
       {
         image: {
-          src: "/collections/malum/products/malum-mono-bag/01.webp",
-          alt: "MALUM | Mono Bag",
-          width: 1084,
-          height: 1451,
+          src: "/collections/malum/products/malum-mini-handbag/01.webp",
+          alt: "MALUM | Mini Handbag",
+          width: 1278,
+          height: 1231,
         },
-        pieceSlugs: ["malum-mono-bag"],
+        pieceSlugs: ["malum-mini-handbag"],
       },
     ],
   },
