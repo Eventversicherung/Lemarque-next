@@ -1,21 +1,34 @@
 "use client";
 
-// Generic fullscreen "vertical scroll = groups, horizontal swipe = slides
-// within a group" experience.
+// Generic "vertical feed of cards = groups, horizontal peek-swipe = slides
+// within a card" experience, in the spirit of a native app feed (Instagram /
+// TikTok style): one card fills most of the screen, snaps into place, and a
+// sliver of the next card always peeks at the bottom so people know there's
+// more below. Swiping right inside a card peeks the next photo (blurred at
+// the edge) before it snaps into focus.
 //
 // Used by:
 //  - app/collections/collections-client.tsx (groups = collections, slides =
-//    look photos, tapping the cover slide opens the collection detail page)
+//    look photos, tapping the "View full collection" link opens the
+//    collection detail page)
 //  - app/collection/[slug]/shop/look-shop-client.tsx (groups = looks within
-//    one collection, slides = the pieces of that look, tapping a piece opens
-//    its product detail page)
+//    one collection, slides = every photo of that look's piece, tapping
+//    anywhere opens the piece's product detail page)
 //
 // Keeping this logic in one place means both experiences stay visually and
 // behaviorally consistent, and any future "swipe through things" view (e.g.
-// a lookbook, a campaign) can reuse it instead of re-implementing wheel /
-// touch / keyboard handling and embla wiring from scratch.
+// a lookbook, a campaign) can reuse it instead of re-implementing snap /
+// peek / embla wiring from scratch.
+//
+// Vertical navigation is native CSS scroll-snap (`overflow-y-auto` +
+// `snap-y snap-mandatory`) rather than hand-rolled wheel/touch delta
+// tracking - this gives correct trackpad/touch/keyboard momentum for free,
+// is far more robust across devices, and is the browser-native way to build
+// a snapping feed. Horizontal navigation inside a card stays on Embla, which
+// already sets `touch-action: pan-y` on its viewport so vertical drags pass
+// through to the outer scroller while horizontal drags are captured by it.
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -32,7 +45,7 @@ export interface SwiperMedia {
 
 export interface SwiperSlideItem {
   media: SwiperMedia;
-  /** Bottom-left caption shown on this slide (non-cover slides only). */
+  /** Bottom-left caption shown on this slide. */
   label?: string;
   /** When set, the slide becomes a link (e.g. to a product detail page). */
   href?: string;
@@ -45,8 +58,17 @@ export interface SwiperGroup {
   eyebrow: string;
   title: string;
   description?: string;
+  /** Inline text link rendered inside the overlay (e.g. "View full collection"). */
   linkHref?: string;
   linkLabel?: string;
+  /**
+   * When set, every slide in this card (cover included) becomes a full tap
+   * target linking here - used when all slides are photos of the same
+   * shoppable piece, so the whole card behaves as "tap to view this piece".
+   */
+  coverHref?: string;
+  /** Keep the eyebrow/title/description overlay visible on every slide, not just the cover. */
+  persistentOverlay?: boolean;
   /** Remaining horizontal slides after the cover. */
   items: SwiperSlideItem[];
 }
@@ -106,13 +128,20 @@ function useGroupPreloader(groups: SwiperGroup[], activeIndex: number) {
 function GroupSlides({
   group,
   isActive,
+  isNear,
   onEmblaApi,
 }: {
   group: SwiperGroup;
+  /** This is the card currently snapped into view. */
   isActive: boolean;
+  /** Adjacent card - keep images eager/decoded so the peek never looks blank. */
+  isNear: boolean;
   onEmblaApi?: (api: ReturnType<typeof useEmblaCarousel>[1]) => void;
 }) {
-  const allSlides: SwiperSlideItem[] = [{ media: group.media }, ...group.items];
+  const allSlides: SwiperSlideItem[] = useMemo(
+    () => [{ media: group.media, href: group.coverHref }, ...group.items],
+    [group.media, group.coverHref, group.items]
+  );
   const [current, setCurrent] = useState(0);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -120,6 +149,7 @@ function GroupSlides({
     dragFree: false,
     align: "center",
     skipSnaps: false,
+    containScroll: "trimSnaps",
     active: isActive,
   });
 
@@ -143,10 +173,12 @@ function GroupSlides({
   }, [emblaApi, onSelect]);
 
   useEffect(() => {
-    if (emblaApi && onEmblaApi) {
+    if (emblaApi && isActive && onEmblaApi) {
       onEmblaApi(emblaApi);
     }
-  }, [emblaApi, onEmblaApi]);
+  }, [emblaApi, isActive, onEmblaApi]);
+
+  const shouldRenderMedia = isActive || isNear;
 
   return (
     <div className="h-full w-full">
@@ -157,76 +189,99 @@ function GroupSlides({
         <div className="flex h-full">
           {allSlides.map((slide, index) => {
             const isCover = index === 0;
-            const slideClassName = "relative flex-[0_0_100%] min-w-0 h-full";
+            const isFocused = current === index;
+            const slideOuterClass =
+              "relative flex-[0_0_86%] sm:flex-[0_0_74%] md:flex-[0_0_62%] min-w-0 h-full px-1 md:px-1.5";
 
             const content = (
-              <>
-                <Image
-                  src={slide.media.src}
-                  alt={slide.media.alt}
-                  fill
-                  priority={index <= 1}
-                  loading="eager"
-                  className="object-cover"
-                  sizes="100vw"
-                />
-                <div className="absolute inset-0 bg-black/30" />
+              <div
+                className={cn(
+                  "relative h-full w-full overflow-hidden transition-all duration-300 ease-out will-change-transform",
+                  isFocused
+                    ? "opacity-100 scale-100 blur-none"
+                    : "opacity-45 scale-[0.94] blur-[3px]"
+                )}
+              >
+                {shouldRenderMedia &&
+                  (() => {
+                    const isPriority = isActive && index === 0;
+                    return (
+                      <Image
+                        src={slide.media.src}
+                        alt={slide.media.alt}
+                        fill
+                        {...(isPriority
+                          ? { priority: true }
+                          : { loading: "lazy" as const })}
+                        className="object-cover"
+                        sizes="(max-width: 768px) 86vw, (max-width: 1024px) 74vw, 62vw"
+                      />
+                    );
+                  })()}
+                <div className="absolute inset-0 bg-black/25" />
 
                 <AnimatePresence>
-                  {isActive && current === index && isCover && (
-                    <motion.div
-                      className="absolute bottom-0 left-0 right-0 p-8 md:p-12 z-10"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      transition={{
-                        duration: 0.5,
-                        ease: [0.25, 0.1, 0.25, 1],
-                      }}
-                    >
-                      <p className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-white/50 mb-2">
-                        {group.eyebrow}
-                      </p>
-                      <h2 className="font-brand text-3xl md:text-5xl lg:text-6xl tracking-[0.35em] text-white mb-3">
-                        {group.title}
-                      </h2>
-                      {group.description && (
-                        <p className="text-xs md:text-sm text-white/60 max-w-md leading-relaxed">
-                          {group.description}
+                  {isActive &&
+                    isFocused &&
+                    (isCover || group.persistentOverlay) && (
+                      <motion.div
+                        className="absolute bottom-0 left-0 right-0 p-6 md:p-10 z-10"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{
+                          duration: 0.5,
+                          ease: [0.25, 0.1, 0.25, 1],
+                        }}
+                      >
+                        <p className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-white/50 mb-2">
+                          {group.eyebrow}
                         </p>
-                      )}
-                      {group.linkHref && (
-                        <Link
-                          href={group.linkHref}
-                          className="inline-block mt-5 text-[10px] uppercase tracking-[0.25em] text-white/40 hover:text-white transition-colors duration-300"
-                        >
-                          {group.linkLabel ?? "View"}
-                        </Link>
-                      )}
-                    </motion.div>
-                  )}
+                        <h2 className="font-brand text-2xl md:text-4xl lg:text-5xl tracking-[0.3em] text-white mb-2">
+                          {group.title}
+                        </h2>
+                        {group.description && (
+                          <p className="text-xs md:text-sm text-white/60 max-w-md leading-relaxed">
+                            {group.description}
+                          </p>
+                        )}
+                        {group.linkHref && !group.coverHref && (
+                          <Link
+                            href={group.linkHref}
+                            className="inline-block mt-4 text-[10px] uppercase tracking-[0.25em] text-white/40 hover:text-white transition-colors duration-300"
+                          >
+                            {group.linkLabel ?? "View"}
+                          </Link>
+                        )}
+                        {group.coverHref && group.linkLabel && (
+                          <span className="inline-block mt-4 text-[10px] uppercase tracking-[0.25em] text-white/40">
+                            {group.linkLabel} &rarr;
+                          </span>
+                        )}
+                      </motion.div>
+                    )}
                 </AnimatePresence>
 
-                {!isCover && slide.label && (
-                  <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12 z-10">
+                {!group.persistentOverlay && !isCover && slide.label && (
+                  <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10 z-10">
                     <p className="text-[10px] uppercase tracking-[0.3em] text-white/40">
                       {slide.label}
                     </p>
                   </div>
                 )}
-              </>
+              </div>
             );
 
-            if (!isCover && slide.href) {
+            if (slide.href) {
               return (
-                <Link key={index} href={slide.href} className={slideClassName}>
+                <Link key={index} href={slide.href} className={slideOuterClass}>
                   {content}
                 </Link>
               );
             }
 
             return (
-              <div key={index} className={slideClassName}>
+              <div key={index} className={slideOuterClass}>
                 {content}
               </div>
             );
@@ -235,26 +290,36 @@ function GroupSlides({
       </div>
 
       {/* Horizontal progress dots */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1 z-20">
-        {allSlides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => emblaApi?.scrollTo(index)}
-            className="py-2 px-0.5"
-            aria-label={`Image ${index + 1}`}
-          >
-            <div
-              className={cn(
-                "h-[2px] rounded-full transition-all duration-400",
-                current === index ? "w-6 bg-white" : "w-2 bg-white/25"
-              )}
-            />
-          </button>
-        ))}
-      </div>
+      {allSlides.length > 1 && (
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1 z-20">
+          {allSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => emblaApi?.scrollTo(index)}
+              className="py-2 px-0.5"
+              aria-label={`Image ${index + 1}`}
+            >
+              <div
+                className={cn(
+                  "h-[2px] rounded-full transition-all duration-400",
+                  current === index ? "w-6 bg-white" : "w-2 bg-white/25"
+                )}
+              />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
+
+function buildThresholdList(steps = 20): number[] {
+  const thresholds: number[] = [];
+  for (let i = 0; i <= steps; i++) thresholds.push(i / steps);
+  return thresholds;
+}
+
+const INTERSECTION_THRESHOLDS = buildThresholdList();
 
 export interface FullScreenSwiperProps {
   groups: SwiperGroup[];
@@ -270,10 +335,9 @@ export function FullScreenSwiper({
   emptyState,
 }: FullScreenSwiperProps) {
   const [activeGroup, setActiveGroup] = useState(0);
-  const isScrolling = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const touchStartY = useRef(0);
-  const touchStartX = useRef(0);
+  const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const ratiosRef = useRef<number[]>([]);
   const horizontalApiRef = useRef<ReturnType<typeof useEmblaCarousel>[1]>(null);
 
   useGroupPreloader(groups, activeGroup);
@@ -285,46 +349,58 @@ export function FullScreenSwiper({
     []
   );
 
-  const scrollTo = useCallback(
-    (index: number) => {
-      if (index < 0 || index >= groups.length) return;
-      if (isScrolling.current) return;
-      isScrolling.current = true;
-      setActiveGroup(index);
-      setTimeout(() => {
-        isScrolling.current = false;
-      }, 700);
-    },
-    [groups.length]
-  );
+  const scrollTo = useCallback((index: number) => {
+    if (index < 0 || index >= sectionRefs.current.length) return;
+    sectionRefs.current[index]?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
 
+  // Determine which card is "active" (dominantly in view) as the feed is
+  // scrolled - the active card gets the interactive embla instance, the
+  // text overlay, and priority image loading. Neighbors intentionally stay
+  // partially visible (the "peek") but never become active until they take
+  // over the majority of the viewport.
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || groups.length === 0) return;
 
-    const handleWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
-      e.preventDefault();
-      if (Math.abs(e.deltaY) > 30) {
-        if (e.deltaY > 0) scrollTo(activeGroup + 1);
-        else scrollTo(activeGroup - 1);
-      }
-    };
+    ratiosRef.current = groups.map(() => 0);
 
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY.current = e.touches[0].clientY;
-      touchStartX.current = e.touches[0].clientX;
-    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const indexAttr = (entry.target as HTMLElement).dataset.index;
+          if (indexAttr === undefined) return;
+          ratiosRef.current[Number(indexAttr)] = entry.intersectionRatio;
+        });
 
-    const handleTouchEnd = (e: TouchEvent) => {
-      const deltaY = touchStartY.current - e.changedTouches[0].clientY;
-      const deltaX = touchStartX.current - e.changedTouches[0].clientX;
-      if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 50) {
-        if (deltaY > 0) scrollTo(activeGroup + 1);
-        else scrollTo(activeGroup - 1);
-      }
-    };
+        let maxIndex = 0;
+        let maxRatio = -1;
+        ratiosRef.current.forEach((ratio, index) => {
+          if (ratio > maxRatio) {
+            maxRatio = ratio;
+            maxIndex = index;
+          }
+        });
 
+        setActiveGroup((prev) => (prev !== maxIndex ? maxIndex : prev));
+      },
+      { root: container, threshold: INTERSECTION_THRESHOLDS }
+    );
+
+    sectionRefs.current.forEach((section) => {
+      if (section) observer.observe(section);
+    });
+
+    return () => observer.disconnect();
+    // Only the count matters for (re)wiring the observer; group identity
+    // changes don't need to reset which card is currently active.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groups.length]);
+
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowDown") {
         e.preventDefault();
@@ -344,52 +420,59 @@ export function FullScreenSwiper({
       }
     };
 
-    container.addEventListener("wheel", handleWheel, { passive: false });
-    container.addEventListener("touchstart", handleTouchStart, {
-      passive: true,
-    });
-    container.addEventListener("touchend", handleTouchEnd, { passive: true });
     window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      container.removeEventListener("wheel", handleWheel);
-      container.removeEventListener("touchstart", handleTouchStart);
-      container.removeEventListener("touchend", handleTouchEnd);
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeGroup, scrollTo]);
 
   if (groups.length === 0) {
     return <>{emptyState}</>;
   }
 
-  const active = groups[activeGroup];
-
   return (
-    <div ref={containerRef} className="fixed inset-0 bg-black overflow-hidden">
+    <div className="fixed inset-0 bg-black overflow-hidden">
       {header}
 
-      {/* Vertical group stack */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={active.key}
-          className="absolute inset-0"
-          initial={{ opacity: 0, y: 60 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -60 }}
-          transition={{ duration: 0.55, ease: [0.25, 0.1, 0.25, 1] }}
-        >
-          <GroupSlides group={active} isActive={true} onEmblaApi={handleEmblaApi} />
-        </motion.div>
-      </AnimatePresence>
+      {/* Vertical card feed - native scroll-snap so trackpad, touch and
+          keyboard scrolling all get correct browser-native momentum. Each
+          card is shorter than 100dvh on purpose, so the next card always
+          peeks in at the bottom as a hint that there's more below. */}
+      <div
+        ref={containerRef}
+        className="no-scrollbar h-dvh w-full overflow-y-auto snap-y snap-mandatory flex flex-col items-center gap-3 md:gap-4 px-0 pt-[env(safe-area-inset-top)]"
+      >
+        {groups.map((group, index) => {
+          const isActive = index === activeGroup;
+          const isNear = Math.abs(index - activeGroup) <= 1;
+          return (
+            <div
+              key={group.key}
+              ref={(el) => {
+                sectionRefs.current[index] = el;
+              }}
+              data-index={index}
+              className="relative w-full max-w-none md:max-w-4xl shrink-0 h-[90dvh] md:h-[88dvh] snap-start snap-always rounded-[22px] md:rounded-[32px] overflow-hidden bg-neutral-950"
+            >
+              <GroupSlides
+                group={group}
+                isActive={isActive}
+                isNear={isNear}
+                onEmblaApi={isActive ? handleEmblaApi : undefined}
+              />
+            </div>
+          );
+        })}
+        {/* Bottom spacer so the last card can fully snap into place above
+            the peek zone instead of clipping against the viewport edge. */}
+        <div aria-hidden className="shrink-0 h-[8dvh] md:h-[10dvh] w-full" />
+      </div>
 
       {/* Group indicator (right side) */}
-      <div className="absolute right-6 md:right-10 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-3">
+      <div className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-3 pointer-events-none">
         {groups.map((group, index) => (
           <button
             key={group.key}
             onClick={() => scrollTo(index)}
-            className="group p-1"
+            className="group p-1 pointer-events-auto"
             aria-label={`Go to ${group.title}`}
           >
             <div
@@ -405,7 +488,7 @@ export function FullScreenSwiper({
       </div>
 
       {/* Group counter */}
-      <div className="absolute top-1/2 left-6 md:left-10 -translate-y-1/2 z-30">
+      <div className="absolute top-1/2 left-4 md:left-8 -translate-y-1/2 z-30 pointer-events-none">
         <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 [writing-mode:vertical-rl] rotate-180">
           {String(activeGroup + 1).padStart(2, "0")} /{" "}
           {String(groups.length).padStart(2, "0")}
@@ -415,7 +498,7 @@ export function FullScreenSwiper({
       {/* Scroll hint */}
       {activeGroup === 0 && (
         <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2"
+          className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 pointer-events-none"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2, duration: 0.8 }}
