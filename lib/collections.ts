@@ -86,7 +86,7 @@ export const collections: Collection[] = [
     // horizontal center, so the default centered object-position crops
     // cleanly even on ultra-wide screens.
     heroImage: {
-      src: "/collections/malum/hero/malum-hero-wide.webp",
+      src: "/collections/malum/hero/malum-hero-beast.webp",
       alt: "MALUM Collection | Stormy sea at night, a searchlight over dark water",
       width: 1536,
       height: 1024,
