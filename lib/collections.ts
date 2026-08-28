@@ -81,14 +81,13 @@ export const collections: Collection[] = [
     // Wide/landscape mood shot (aerial view of a stormy sea at night, a
     // ship's light cutting through the waves) so the Collection Hub hero
     // fills wide desktop viewports without an awkward crop the way a
-    // portrait garment photo would. Generated placeholder - swap for a real
-    // MALUM campaign still whenever one is shot. The focal point (glowing
-    // wave crest + light beam) sits near the horizontal center, so the
-    // default centered object-position crops cleanly even on ultra-wide
-    // screens.
+    // portrait garment photo would. The focal point (glowing wave crest +
+    // light beam, with a faint underwater beast in the cone) sits near the
+    // horizontal center, so the default centered object-position crops
+    // cleanly even on ultra-wide screens.
     heroImage: {
       src: "/collections/malum/hero/malum-hero-wide.webp",
-      alt: "MALUM Collection | Stormy sea at night",
+      alt: "MALUM Collection | Stormy sea at night, a searchlight over dark water",
       width: 1536,
       height: 1024,
     },
