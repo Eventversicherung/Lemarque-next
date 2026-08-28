@@ -258,8 +258,7 @@ export const products: Product[] = [
     slug: "malum-lumos-bag-black-fish",
     name: "Lumos Bag — Black Fish",
     collectionSlug: "malum",
-    // Excluded from the current curated MALUM look ranking (see note above).
-    lookIndex: -1,
+    lookIndex: 15,
     category: "Handbag",
     price: "Price Upon Request",
     description:
@@ -279,8 +278,7 @@ export const products: Product[] = [
     slug: "malum-lumos-bag-black-nubuk",
     name: "Lumos Bag — Black Nubuk",
     collectionSlug: "malum",
-    // Excluded from the current curated MALUM look ranking (see note above).
-    lookIndex: -1,
+    lookIndex: 15,
     category: "Handbag",
     price: "Price Upon Request",
     description:
@@ -300,8 +298,7 @@ export const products: Product[] = [
     slug: "malum-lumos-bag-creme-fish",
     name: "Lumos Bag — Crème Fish",
     collectionSlug: "malum",
-    // Excluded from the current curated MALUM look ranking (see note above).
-    lookIndex: -1,
+    lookIndex: 15,
     category: "Handbag",
     price: "Price Upon Request",
     description:
@@ -462,7 +459,14 @@ export function getProduct(slug: string): Product | undefined {
 }
 
 export function getProductsByCollection(collectionSlug: string): Product[] {
-  return products.filter((p) => p.collectionSlug === collectionSlug);
+  return products
+    .filter((p) => p.collectionSlug === collectionSlug)
+    .sort((a, b) => {
+      const aHidden = a.lookIndex < 0;
+      const bHidden = b.lookIndex < 0;
+      if (aHidden !== bHidden) return aHidden ? 1 : -1;
+      return a.lookIndex - b.lookIndex;
+    });
 }
 
 export function getProductsByLook(
@@ -505,16 +509,13 @@ export function getLookSiblings(product: Product): Product[] {
 export function getRelatedProducts(product: Product, count = 3): Product[] {
   if (!isProductCurrentlyShoppable(product)) return [];
 
-  const sameCollection = products.filter(
-    (p) =>
-      p.collectionSlug === product.collectionSlug &&
-      p.slug !== product.slug &&
-      isProductCurrentlyShoppable(p)
+  const shopMates = getProductsByCollection(product.collectionSlug).filter(
+    (p) => p.lookIndex !== product.lookIndex && isProductCurrentlyShoppable(p)
   );
-  if (sameCollection.length >= count) return sameCollection.slice(0, count);
+  if (shopMates.length >= count) return shopMates.slice(0, count);
 
   const others = products.filter(
     (p) => p.collectionSlug !== product.collectionSlug && isProductCurrentlyShoppable(p)
   );
-  return [...sameCollection, ...others].slice(0, count);
+  return [...shopMates, ...others].slice(0, count);
 }

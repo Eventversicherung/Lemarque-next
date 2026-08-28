@@ -20,6 +20,8 @@ export interface CollectionImage {
 export interface Look {
   image: CollectionImage;
   pieceSlugs: string[];
+  /** Optional shop-card title when a look contains more than one piece. */
+  name?: string;
   published?: boolean;
 }
 
@@ -168,10 +170,9 @@ export const collections: Collection[] = [
         height: 1448,
       },
     ],
-    // Curated shop order (client-approved ranking). Products not in this
-    // ranking (heels, Lumos bags) stay in lib/products.ts with
-    // `lookIndex: -1` - their own /product/[slug] pages keep working, they
-    // just don't appear in this swipeable feed.
+    // Curated shop order (client-approved ranking). A look only appears
+    // in the shop feed when `published: true`. Heels stay in
+    // lib/products.ts with `lookIndex: -1` and are not listed here.
     looks: [
       {
         image: {
@@ -181,6 +182,7 @@ export const collections: Collection[] = [
           height: 1365,
         },
         pieceSlugs: ["malum-otodus-cashmere-coat"],
+        published: true,
       },
       {
         image: {
@@ -190,6 +192,7 @@ export const collections: Collection[] = [
           height: 1600,
         },
         pieceSlugs: ["malum-otodus-trench-coat"],
+        published: true,
       },
       {
         image: {
@@ -199,6 +202,7 @@ export const collections: Collection[] = [
           height: 1448,
         },
         pieceSlugs: ["malum-bomber-jacket"],
+        published: true,
       },
       {
         image: {
@@ -208,6 +212,7 @@ export const collections: Collection[] = [
           height: 1600,
         },
         pieceSlugs: ["malum-cashmere-barathea-suit"],
+        published: true,
       },
       {
         image: {
@@ -217,6 +222,7 @@ export const collections: Collection[] = [
           height: 1448,
         },
         pieceSlugs: ["malum-ao-dai-gown"],
+        published: true,
       },
       {
         image: {
@@ -226,6 +232,7 @@ export const collections: Collection[] = [
           height: 1600,
         },
         pieceSlugs: ["malum-siren-gown"],
+        published: true,
       },
       {
         image: {
@@ -235,6 +242,7 @@ export const collections: Collection[] = [
           height: 1600,
         },
         pieceSlugs: ["malum-black-latex-dress"],
+        published: true,
       },
       {
         image: {
@@ -244,6 +252,7 @@ export const collections: Collection[] = [
           height: 1448,
         },
         pieceSlugs: ["malum-blk-co-dress"],
+        published: true,
       },
       {
         image: {
@@ -253,6 +262,7 @@ export const collections: Collection[] = [
           height: 1600,
         },
         pieceSlugs: ["malum-brawl-hoodie"],
+        published: true,
       },
       {
         image: {
@@ -262,6 +272,7 @@ export const collections: Collection[] = [
           height: 1451,
         },
         pieceSlugs: ["malum-halfsleeve-suiting-set"],
+        published: true,
       },
       {
         image: {
@@ -271,6 +282,7 @@ export const collections: Collection[] = [
           height: 1452,
         },
         pieceSlugs: ["malum-tank-top-suiting-set"],
+        published: true,
       },
       {
         image: {
@@ -290,6 +302,7 @@ export const collections: Collection[] = [
           height: 1451,
         },
         pieceSlugs: ["malum-mono-bag"],
+        published: true,
       },
       {
         image: {
@@ -299,6 +312,7 @@ export const collections: Collection[] = [
           height: 1600,
         },
         pieceSlugs: ["malum-kidney-sling-bag"],
+        published: true,
       },
       {
         image: {
@@ -308,6 +322,22 @@ export const collections: Collection[] = [
           height: 1231,
         },
         pieceSlugs: ["malum-mini-handbag"],
+        published: true,
+      },
+      {
+        image: {
+          src: "/collections/malum/products/malum-lumos-bag-black-nubuk/01.webp",
+          alt: "MALUM | Lumos Handbag",
+          width: 1084,
+          height: 1451,
+        },
+        name: "Lumos Handbag",
+        pieceSlugs: [
+          "malum-lumos-bag-black-nubuk",
+          "malum-lumos-bag-black-fish",
+          "malum-lumos-bag-creme-fish",
+        ],
+        published: true,
       },
     ],
   },

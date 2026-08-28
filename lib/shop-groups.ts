@@ -29,14 +29,14 @@ export function buildShopGroups(collection: Collection): SwiperGroup[] {
     return {
       key: `${collection.slug}-look-${index}`,
       media: look.image,
-      eyebrow: singlePiece
-        ? `${collection.name} \u00b7 Look ${String(index + 1).padStart(2, "0")} / ${String(looks.length).padStart(2, "0")}`
-        : `${collection.name} / Scroll for more looks`,
-      title: singlePiece ? singlePiece.name : `Look ${String(index + 1).padStart(2, "0")}`,
+      eyebrow: `${collection.name} \u00b7 Look ${String(index + 1).padStart(2, "0")} / ${String(looks.length).padStart(2, "0")}`,
+      title: look.name ?? (singlePiece ? singlePiece.name : `Look ${String(index + 1).padStart(2, "0")}`),
       description: singlePiece
         ? `${singlePiece.category} \u00b7 ${singlePiece.price}`
-        : "Swipe right to shop every piece from this look.",
-      coverHref: singlePiece ? `/product/${singlePiece.slug}` : undefined,
+        : pieces.length > 0
+          ? `${pieces[0].category} \u00b7 ${pieces.length} variants \u00b7 ${pieces[0].price}`
+          : "Swipe right to shop every piece from this look.",
+      coverHref: pieces[0] ? `/product/${pieces[0].slug}` : undefined,
       linkLabel: singlePiece ? "View full details" : undefined,
       persistentOverlay: Boolean(singlePiece),
       items: singlePiece
