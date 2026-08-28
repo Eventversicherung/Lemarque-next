@@ -1,5 +1,5 @@
 import type { SwiperGroup } from "@/components/full-screen-swiper";
-import type { Collection } from "@/lib/collections";
+import { getShopLooks, type Collection } from "@/lib/collections";
 import { getProduct } from "@/lib/products";
 
 /**
@@ -7,9 +7,13 @@ import { getProduct } from "@/lib/products";
  * shoppable collection. Shared by the standalone immersive /shop route and
  * the embedded shop section on the collection hub page, so both stay in
  * sync and there's a single place to change how looks map to slides.
+ *
+ * Only reads looks with `published: true` (see lib/collections.ts), so a
+ * collection's remaining looks can be curated/ranked ahead of time and go
+ * live one at a time without ever touching this file.
  */
 export function buildShopGroups(collection: Collection): SwiperGroup[] {
-  const looks = collection.looks ?? [];
+  const looks = getShopLooks(collection);
 
   return looks.map((look, index) => {
     // Every look currently resolves to exactly one piece, so the horizontal

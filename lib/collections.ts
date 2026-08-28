@@ -10,10 +10,17 @@ export interface CollectionImage {
  * plus the individual garments ("pieces") that make it up, referenced by
  * their `Product.slug` from lib/products.ts. Order in `pieceSlugs` is the
  * order pieces appear when swiping through the look.
+ *
+ * `published` gates whether the look appears in the shop feed / related-piece
+ * rails. It defaults to hidden (`undefined`/`false`) so a collection's looks
+ * can be curated/ranked ahead of time and rolled out one at a time by
+ * flipping this to `true` when that look's photography and copy are ready -
+ * "Stück für Stück" rollout without ever deleting or re-typing data.
  */
 export interface Look {
   image: CollectionImage;
   pieceSlugs: string[];
+  published?: boolean;
 }
 
 export interface Collection {
@@ -273,6 +280,7 @@ export const collections: Collection[] = [
           height: 1451,
         },
         pieceSlugs: ["malum-leather-harness"],
+        published: true,
       },
       {
         image: {
@@ -627,9 +635,14 @@ export function getCollection(slug: string): Collection | undefined {
   return collections.find((c) => c.slug === slug);
 }
 
-/** True when the collection has an immersive, shoppable piece-by-piece experience. */
+/** Looks that are live in the shop feed right now (see `Look.published`). */
+export function getShopLooks(collection: Collection): Look[] {
+  return (collection.looks ?? []).filter((look) => look.published);
+}
+
+/** True when the collection has at least one published, shoppable look. */
 export function hasShoppableLooks(collection: Collection): boolean {
-  return Boolean(collection.looks && collection.looks.length > 0);
+  return getShopLooks(collection).length > 0;
 }
 
 export function getRelatedCollections(
