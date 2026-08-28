@@ -6,6 +6,15 @@ export const metadata: Metadata = {
   title: "Collections",
   description:
     "Explore all LEMARQUE collections. Handcrafted leather goods, avant-garde outerwear, and unique accessories.",
+  openGraph: {
+    title: "Collections | LEMARQUE",
+    description:
+      "Explore all LEMARQUE collections. Handcrafted leather goods, avant-garde outerwear, and unique accessories.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Collections | LEMARQUE",
+  },
 };
 
 function buildPreloadUrl(src: string, width = 1920): string {

@@ -39,21 +39,12 @@ export const metadata: Metadata = {
     title: BRAND_OG_TITLE,
     description:
       "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique creation.",
-    images: [
-      {
-        url: "/og-image.webp",
-        width: 1200,
-        height: 630,
-        alt: `LEMARQUE. ${BRAND_TAGLINE}.`,
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: BRAND_OG_TITLE,
     description:
       "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique creation.",
-    images: ["/og-image.webp"],
   },
   robots: {
     index: true,

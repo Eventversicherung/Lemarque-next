@@ -22,9 +22,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "Collection Not Found" };
   }
 
-  const shareImage = collection.ogImage ?? collection.heroImage;
   // Matches the root layout OG title so the brand line carries into every
-  // shared collection link, not just the homepage.
+  // shared collection link, not just the homepage. The share image itself
+  // is generated per collection by opengraph-image.tsx.
   const shareTitle = `${collection.name} | LEMARQUE | ${BRAND_TAGLINE}`;
 
   return {
@@ -33,20 +33,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: shareTitle,
       description: collection.description,
-      images: [
-        {
-          url: shareImage.src,
-          width: shareImage.width,
-          height: shareImage.height,
-          alt: shareImage.alt,
-        },
-      ],
     },
     twitter: {
       card: "summary_large_image",
       title: shareTitle,
       description: collection.description,
-      images: [shareImage.src],
     },
   };
 }

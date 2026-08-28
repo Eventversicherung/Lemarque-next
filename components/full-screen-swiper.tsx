@@ -227,7 +227,7 @@ function GroupSlides({
   const shouldRenderMedia = isActive || isNear;
 
   return (
-    <div className="h-full w-full">
+    <div className="relative h-full w-full">
       <div
         ref={emblaRef}
         className="h-full overflow-hidden cursor-grab active:cursor-grabbing"
@@ -266,54 +266,6 @@ function GroupSlides({
                   })()}
                 <div className="absolute inset-0 bg-black/25" />
 
-                <AnimatePresence>
-                  {isActive &&
-                    isFocused &&
-                    (isCover || group.persistentOverlay) && (
-                      <motion.div
-                        className="absolute bottom-0 left-0 right-0 p-6 md:p-10 z-10"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{
-                          duration: 0.5,
-                          ease: [0.25, 0.1, 0.25, 1],
-                        }}
-                      >
-                        <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-white/50 mb-1.5">
-                          {group.eyebrow}
-                        </p>
-                        <h2
-                          className={cn(
-                            "font-brand text-white mb-1.5 leading-tight",
-                            getTitleScale(group.title).size,
-                            getTitleScale(group.title).tracking
-                          )}
-                        >
-                          {group.title}
-                        </h2>
-                        {group.description && (
-                          <p className="text-xs md:text-sm text-white/60 max-w-md leading-relaxed">
-                            {group.description}
-                          </p>
-                        )}
-                        {group.linkHref && !group.coverHref && (
-                          <Link
-                            href={group.linkHref}
-                            className="inline-block mt-4 text-[10px] uppercase tracking-[0.25em] text-white/40 hover:text-white transition-colors duration-300"
-                          >
-                            {group.linkLabel ?? "View"}
-                          </Link>
-                        )}
-                        {group.coverHref && group.linkLabel && (
-                          <span className="inline-block mt-4 text-[10px] uppercase tracking-[0.25em] text-white/40">
-                            {group.linkLabel} &rarr;
-                          </span>
-                        )}
-                      </motion.div>
-                    )}
-                </AnimatePresence>
-
                 {!group.persistentOverlay && !isCover && slide.label && (
                   <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10 z-10">
                     <p className="text-[10px] uppercase tracking-[0.3em] text-white/40">
@@ -341,21 +293,70 @@ function GroupSlides({
         </div>
       </div>
 
-      {/* Edge vignette - darkens the peeking neighbor slides near the card
-          boundary so the eye is pulled to the sharp, centered slide even
-          before the blur/opacity treatment on the slide itself kicks in. */}
+      {/* Soft edge fade for peeking neighbor slides only. The look title
+          sits above this layer so product names stay readable. */}
       {allSlides.length > 1 && (
         <>
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-y-0 left-0 w-[16%] md:w-[20%] z-[6] bg-gradient-to-r from-black/80 to-transparent"
+            className="pointer-events-none absolute inset-y-0 left-0 w-[10%] md:w-[12%] z-[6] bg-gradient-to-r from-black/35 to-transparent"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-y-0 right-0 w-[16%] md:w-[20%] z-[6] bg-gradient-to-l from-black/80 to-transparent"
+            className="pointer-events-none absolute inset-y-0 right-0 w-[10%] md:w-[12%] z-[6] bg-gradient-to-l from-black/35 to-transparent"
           />
         </>
       )}
+
+      <AnimatePresence>
+        {isActive && (current === 0 || group.persistentOverlay) && (
+          <motion.div
+            className="pointer-events-none absolute inset-0 z-10 flex justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{
+              duration: 0.5,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+          >
+            <div className="relative h-full w-[88%] sm:w-[80%] md:w-[66%] lg:w-[60%] xl:w-[54%] px-1 md:px-1.5">
+              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+                <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-white/70 mb-1.5">
+                  {group.eyebrow}
+                </p>
+                <h2
+                  className={cn(
+                    "font-brand text-white mb-1.5 leading-tight drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)]",
+                    getTitleScale(group.title).size,
+                    getTitleScale(group.title).tracking
+                  )}
+                >
+                  {group.title}
+                </h2>
+                {group.description && (
+                  <p className="text-xs md:text-sm text-white/75 max-w-md leading-relaxed">
+                    {group.description}
+                  </p>
+                )}
+                {group.linkHref && !group.coverHref && (
+                  <Link
+                    href={group.linkHref}
+                    className="pointer-events-auto inline-block mt-4 text-[10px] uppercase tracking-[0.25em] text-white/50 hover:text-white transition-colors duration-300"
+                  >
+                    {group.linkLabel ?? "View"}
+                  </Link>
+                )}
+                {group.coverHref && group.linkLabel && (
+                  <span className="inline-block mt-4 text-[10px] uppercase tracking-[0.25em] text-white/50">
+                    {group.linkLabel} &rarr;
+                  </span>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Horizontal progress dots */}
       {allSlides.length > 1 && (

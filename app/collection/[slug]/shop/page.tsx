@@ -29,8 +29,17 @@ export async function generateMetadata({
   }
 
   return {
-    title: `Shop ${collection.name} | LEMARQUE`,
+    title: `Shop ${collection.name}`,
     description: `Browse every look and piece from the ${collection.name} collection.`,
+    openGraph: {
+      title: `Shop ${collection.name} | LEMARQUE`,
+      description: `Browse every look and piece from the ${collection.name} collection.`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Shop ${collection.name} | LEMARQUE`,
+      description: `Browse every look and piece from the ${collection.name} collection.`,
+    },
   };
 }
 

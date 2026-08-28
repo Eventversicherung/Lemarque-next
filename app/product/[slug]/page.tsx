@@ -28,14 +28,11 @@ export async function generateMetadata({
     openGraph: {
       title: `${product.name} | LEMARQUE`,
       description: product.description,
-      images: [
-        {
-          url: product.images[0].src,
-          width: product.images[0].width,
-          height: product.images[0].height,
-          alt: product.images[0].alt,
-        },
-      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${product.name} | LEMARQUE`,
+      description: product.description,
     },
   };
 }
