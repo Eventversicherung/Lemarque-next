@@ -22,7 +22,10 @@ export function Navigation() {
 
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(window.scrollY > 16);
+      // Wait until the hero has mostly left — frost only when content
+      // actually travels under the bar, not on the first nudge.
+      const threshold = Math.min(640, window.innerHeight * 0.55);
+      setScrolled(window.scrollY > threshold);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -33,18 +36,10 @@ export function Navigation() {
     <>
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-300",
-          scrolled
-            ? "border-b border-white/8 bg-black/60 backdrop-blur-md"
-            : "border-b border-transparent"
+          "fixed top-0 left-0 right-0 z-50 transition-[backdrop-filter] duration-700 ease-out",
+          scrolled && "backdrop-blur-[4px]"
         )}
       >
-        {!scrolled && (
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-linear-to-b from-black/70 via-black/25 to-transparent"
-          />
-        )}
         <nav className="relative flex items-center justify-between px-6 md:px-10 py-4 md:py-5">
           <BrandLogo size="sm" priority />
 
