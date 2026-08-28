@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { BRAND_TAGLINE } from "@/lib/brand";
 import { collections, getCollection } from "@/lib/collections";
 import { CollectionDetailClient } from "./collection-detail-client";
 
@@ -22,10 +23,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const shareImage = collection.ogImage ?? collection.heroImage;
-  // Matches the root layout's own OG title pattern ("LEMARQUE | Manufactured
-  // 1/1 Attire") so the brand's core promise carries into every shared
-  // collection link, not just the homepage.
-  const shareTitle = `${collection.name} | LEMARQUE | Manufactured 1/1 Attire`;
+  // Matches the root layout OG title so the brand line carries into every
+  // shared collection link, not just the homepage.
+  const shareTitle = `${collection.name} | LEMARQUE | ${BRAND_TAGLINE}`;
 
   return {
     title: `${collection.name} | ${collection.season} ${collection.year}`,

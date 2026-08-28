@@ -39,7 +39,7 @@ function AboutHero() {
           transition={{ duration: 0.8, delay: 0.3 }}
         >
           <p className="text-[10px] uppercase tracking-[0.3em] text-white/50 mb-3">
-            Manufactured 1/1 Attire
+            Manufactured Attire
           </p>
           <h1 className="font-brand text-4xl md:text-6xl tracking-[0.35em] text-white">
             ABOUT

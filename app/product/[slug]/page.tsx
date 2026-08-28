@@ -23,7 +23,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${product.name} | LEMARQUE`,
+    title: product.name,
     description: product.description,
     openGraph: {
       title: `${product.name} | LEMARQUE`,

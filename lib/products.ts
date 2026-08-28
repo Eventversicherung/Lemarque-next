@@ -378,10 +378,6 @@ export const products: Product[] = [
     price: "Price Upon Request",
     description:
       "A full-length double-breasted coat in brushed cashmere, closed with signature shark-tooth-shaped hardware.",
-    // Editorial cover has the model lower in frame with sky/waves above -
-    // anchor the wide hero crop near the top third so his face doesn't get
-    // cropped off, instead of the default vertical-center crop.
-    heroImagePosition: "center 18%",
     images: [
       { src: "/collections/malum/editorial/malum-editorial-coat.webp", alt: "MALUM | Otodus Cashmere Coat, stormy shoreline at night", width: 1024, height: 1365 },
       { src: "/collections/malum/products/malum-otodus-cashmere-coat/01.webp", alt: "MALUM | Otodus Cashmere Coat", width: 1197, height: 1600 },

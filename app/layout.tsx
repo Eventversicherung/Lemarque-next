@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { BRAND_OG_TITLE, BRAND_TAGLINE } from "@/lib/brand";
 import "./globals.css";
 
 const inter = Inter({
@@ -16,11 +17,11 @@ export const metadata: Metadata = {
     template: "%s | LEMARQUE",
   },
   description:
-    "LEMARQUE. Manufactured 1/1 Attire. Handcrafted leather goods, avant-garde outerwear, and unique accessories.",
+    `LEMARQUE. ${BRAND_TAGLINE}. Handcrafted leather goods, avant-garde outerwear, and unique accessories.`,
   keywords: [
     "LEMARQUE",
     "fashion",
-    "manufactured 1/1",
+    "manufactured attire",
     "handmade",
     "leather goods",
     "luxury",
@@ -35,23 +36,23 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://lemarque-next.vercel.app",
     siteName: "LEMARQUE",
-    title: "LEMARQUE | Manufactured 1/1 Attire",
+    title: BRAND_OG_TITLE,
     description:
-      "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique 1/1 creation.",
+      "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique creation.",
     images: [
       {
         url: "/og-image.webp",
         width: 1200,
         height: 630,
-        alt: "LEMARQUE. Manufactured 1/1 Attire.",
+        alt: `LEMARQUE. ${BRAND_TAGLINE}.`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "LEMARQUE | Manufactured 1/1 Attire",
+    title: BRAND_OG_TITLE,
     description:
-      "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique 1/1 creation.",
+      "Handcrafted leather goods, avant-garde outerwear, and unique accessories. Every piece manufactured as a unique creation.",
     images: ["/og-image.webp"],
   },
   robots: {

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
 import { Separator } from "@/components/ui/separator";
+import { BRAND_TAGLINE, CONTACT_HREF } from "@/lib/brand";
 
 export function Footer() {
   return (
@@ -10,7 +11,7 @@ export function Footer() {
         <div className="space-y-4">
           <BrandLogo size="md" />
           <p className="text-xs text-muted-foreground tracking-wider max-w-xs">
-            Manufactured 1/1 Attire. Every piece handmade,
+            {BRAND_TAGLINE}. Every piece handmade,
             unique, and irreplaceable.
           </p>
         </div>
@@ -35,7 +36,7 @@ export function Footer() {
             About
           </Link>
           <a
-            href="https://le-marque.com/contacts/"
+            href={CONTACT_HREF}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300"

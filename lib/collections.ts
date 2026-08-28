@@ -309,7 +309,7 @@ export const collections: Collection[] = [
     season: "Collection",
     year: "2025",
     description:
-      "Manufactured 1/1 attire. Handcrafted leather goods and avant-garde outerwear.",
+      "Manufactured attire. Handcrafted leather goods and avant-garde outerwear.",
     longDescription:
       "The XXV Collection marks a defining chapter for LEMARQUE. Shot at the iconic Kuhlhaus, this collection brings together handcrafted leather goods, bomber jackets, and accessories. Each piece manufactured as a unique 1/1 creation. Featuring genuine leather, stainless steel hardware, and cotton linings, every item embodies uncompromising craftsmanship. All items are handmade while select items may require fittings. The process of production usually takes up to 6 weeks.",
     heroImage: {
