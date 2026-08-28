@@ -321,7 +321,7 @@ function GroupSlides({
             }}
           >
             <div className="relative h-full w-[88%] sm:w-[80%] md:w-[66%] lg:w-[60%] xl:w-[54%] px-1 md:px-1.5">
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+              <div className="absolute bottom-0 left-0 right-0 flex flex-col items-start md:items-center p-6 md:p-10 text-left md:text-center">
                 <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-white/70 mb-1.5">
                   {group.eyebrow}
                 </p>
