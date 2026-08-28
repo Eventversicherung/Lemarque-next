@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { collections, getCollection, hasShoppableLooks } from "@/lib/collections";
+import { buildShopGroups } from "@/lib/shop-groups";
 import { LookShopClient } from "./look-shop-client";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
+
+function buildPreloadUrl(src: string, width = 1920): string {
+  return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=75`;
+}
 
 export async function generateStaticParams() {
   return collections
@@ -37,5 +42,29 @@ export default async function CollectionShopPage({ params }: PageProps) {
     notFound();
   }
 
-  return <LookShopClient collection={collection} />;
+  // Preload the first couple of images that render immediately, the same
+  // way app/collections/page.tsx does for the collections feed, so opening
+  // the shop feels just as instant as opening /collections.
+  const groups = buildShopGroups(collection);
+  const firstGroup = groups[0];
+  const preloadSrcs = [
+    firstGroup?.media.src,
+    ...(firstGroup?.items.slice(0, 3).map((item) => item.media.src) ?? []),
+    groups[1]?.media.src,
+  ].filter((src): src is string => Boolean(src));
+
+  return (
+    <>
+      {preloadSrcs.map((src) => (
+        <link
+          key={src}
+          rel="preload"
+          as="image"
+          href={buildPreloadUrl(src)}
+          fetchPriority="high"
+        />
+      ))}
+      <LookShopClient collection={collection} />
+    </>
+  );
 }

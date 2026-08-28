@@ -38,6 +38,7 @@ export function LookShopClient({ collection }: { collection: Collection }) {
     <FullScreenSwiper
       groups={groups}
       header={<ShopHeader collection={collection} />}
+      edgeToEdge
       emptyState={
         <div className="fixed inset-0 bg-black flex flex-col items-center justify-center gap-6 px-6 text-center">
           <ShopHeader collection={collection} />
