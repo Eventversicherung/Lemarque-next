@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
 import { FullScreenSwiper } from "@/components/full-screen-swiper";
@@ -32,7 +33,7 @@ function ShopHeader({ collection }: { collection: Collection }) {
 }
 
 export function LookShopClient({ collection }: { collection: Collection }) {
-  const groups = buildShopGroups(collection);
+  const groups = useMemo(() => buildShopGroups(collection), [collection]);
 
   return (
     <FullScreenSwiper

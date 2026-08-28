@@ -28,7 +28,7 @@
 // already sets `touch-action: pan-y` on its viewport so vertical drags pass
 // through to the outer scroller while horizontal drags are captured by it.
 
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -71,6 +71,12 @@ export interface SwiperGroup {
   persistentOverlay?: boolean;
   /** Remaining horizontal slides after the cover. */
   items: SwiperSlideItem[];
+  /**
+   * Product/look slugs used as URL hashes. The shop's snap scroller is
+   * not the document, so native `#id` scrolling is not enough — these
+   * ids let the feed restore the exact card after leaving a detail page.
+   */
+  anchorIds?: string[];
 }
 
 // Wide letter-spacing reads as intentional and premium on a short word like
@@ -383,6 +389,24 @@ function buildThresholdList(steps = 20): number[] {
 
 const INTERSECTION_THRESHOLDS = buildThresholdList();
 
+function findAnchorIndex(groups: SwiperGroup[], hash: string): number {
+  if (!hash) return -1;
+  return groups.findIndex(
+    (group) => group.anchorIds?.includes(hash) || group.key === hash
+  );
+}
+
+function scrollSectionToContainerStart(
+  container: HTMLElement,
+  section: HTMLElement,
+  behavior: ScrollBehavior = "auto"
+) {
+  const nextTop =
+    container.scrollTop +
+    (section.getBoundingClientRect().top - container.getBoundingClientRect().top);
+  container.scrollTo({ top: nextTop, behavior });
+}
+
 export interface FullScreenSwiperProps {
   groups: SwiperGroup[];
   /** Fixed header overlay (logo, close link, etc.). */
@@ -421,8 +445,73 @@ export function FullScreenSwiper({
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const ratiosRef = useRef<number[]>([]);
   const horizontalApiRef = useRef<ReturnType<typeof useEmblaCarousel>[1]>(null);
+  const restoreTargetRef = useRef<number | null>(null);
+  const groupsRef = useRef(groups);
+  groupsRef.current = groups;
 
   useGroupPreloader(groups, activeGroup);
+
+  const restoreAnchor = useCallback(
+    (behavior: ScrollBehavior = "auto") => {
+      if (embedded) return -1;
+      const hash = window.location.hash.replace(/^#/, "");
+      const index = findAnchorIndex(groupsRef.current, hash);
+      if (index < 0) return -1;
+      const container = containerRef.current;
+      const section = sectionRefs.current[index];
+      if (!container || !section) return -1;
+      scrollSectionToContainerStart(container, section, behavior);
+      restoreTargetRef.current = index;
+      setActiveGroup((prev) => (prev !== index ? index : prev));
+      return index;
+    },
+    [embedded]
+  );
+
+  // Hash is client-only and the snap scroller is not the document, so we
+  // restore the matching card before paint. That way "back" from a product
+  // page lands on the piece you left, not look 01.
+  useLayoutEffect(() => {
+    if (embedded) return;
+    restoreAnchor("auto");
+  }, [embedded, restoreAnchor]);
+
+  // Refs / snap layout can settle one frame later on mobile. Re-apply once
+  // after paint if a hash is present, so we don't stick on look 01.
+  useEffect(() => {
+    if (embedded || !window.location.hash) return;
+    restoreAnchor("auto");
+  }, [embedded, restoreAnchor]);
+
+  useEffect(() => {
+    if (embedded) return;
+    const onHashChange = () => {
+      restoreAnchor("smooth");
+    };
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, [embedded, restoreAnchor]);
+
+  // Keep the URL hash on the active look (replaceState, no extra history
+  // entry) so the browser back button also returns to this card.
+  // Wait until restore has applied `activeGroup` — otherwise the first
+  // effect run (still on look 0) would overwrite the incoming piece hash.
+  useEffect(() => {
+    if (embedded) return;
+    if (
+      restoreTargetRef.current !== null &&
+      activeGroup !== restoreTargetRef.current
+    ) {
+      return;
+    }
+    restoreTargetRef.current = null;
+    const ids = groupsRef.current[activeGroup]?.anchorIds;
+    if (!ids?.length) return;
+    const current = window.location.hash.replace(/^#/, "");
+    if (ids.includes(current)) return;
+    const next = `${window.location.pathname}${window.location.search}#${ids[0]}`;
+    window.history.replaceState(null, "", next);
+  }, [activeGroup, embedded]);
 
   const handleEmblaApi = useCallback(
     (api: ReturnType<typeof useEmblaCarousel>[1]) => {
@@ -526,23 +615,34 @@ export function FullScreenSwiper({
     return <>{emptyState}</>;
   }
 
-  // Embedded mode: a plain vertical stack in normal document flow, sized to
-  // the page's own content width (matching the sections above/below it)
-  // instead of the fixed, edge-inset "floating card" used by the immersive
-  // full-screen feed. No scroll-snap, no independent scroll container, no
-  // focus-dimming - the page's native scroll carries the user through every
-  // look, and each card's horizontal swipe (to browse that look's pieces)
-  // stays fully interactive throughout, not just on whichever one happens
-  // to be "active".
+  // Embedded mode: a plain vertical stack in normal document flow. No
+  // scroll-snap, no independent scroll container — the page's native
+  // scroll carries the user through every look. `edgeToEdge` matches the
+  // /collections and /shop feeds (full bleed, square corners) so a
+  // collection hub does not suddenly look inset next to those pages.
   if (embedded) {
     return (
-      <div className="w-full px-6 md:px-16">
-        <div className="flex flex-col gap-4 md:gap-6">
+      <div className={cn("w-full", !edgeToEdge && "px-6 md:px-16")}>
+        <div
+          className={cn(
+            "flex flex-col",
+            edgeToEdge ? "gap-0.5 md:gap-1" : "gap-4 md:gap-6"
+          )}
+        >
           {groups.map((group, index) => (
             <div
               key={group.key}
-              className="relative w-full h-[75vh] sm:h-[80vh] md:h-[85vh] overflow-hidden bg-neutral-950 rounded-[10px] md:rounded-[14px]"
+              id={group.anchorIds?.[0]}
+              className={cn(
+                "relative w-full overflow-hidden bg-neutral-950",
+                edgeToEdge
+                  ? "h-[88vh] md:h-[92vh] rounded-none"
+                  : "h-[75vh] sm:h-[80vh] md:h-[85vh] rounded-[10px] md:rounded-[14px]"
+              )}
             >
+              {group.anchorIds?.slice(1).map((anchorId) => (
+                <span key={anchorId} id={anchorId} hidden />
+              ))}
               <GroupSlides group={group} isActive isNear priority={index === 0} />
             </div>
           ))}
@@ -569,6 +669,7 @@ export function FullScreenSwiper({
           return (
             <div
               key={group.key}
+              id={group.anchorIds?.[0]}
               ref={(el) => {
                 sectionRefs.current[index] = el;
               }}
@@ -580,6 +681,9 @@ export function FullScreenSwiper({
                   : "max-w-none md:max-w-5xl lg:max-w-6xl xl:max-w-7xl rounded-[10px] md:rounded-[14px]"
               )}
             >
+              {group.anchorIds?.slice(1).map((anchorId) => (
+                <span key={anchorId} id={anchorId} hidden />
+              ))}
               <GroupSlides
                 group={group}
                 isActive={isActive}

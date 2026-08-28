@@ -12,6 +12,11 @@ import { getProduct } from "@/lib/products";
  * collection's remaining looks can be curated/ranked ahead of time and go
  * live one at a time without ever touching this file.
  */
+/** Shop URL that restores the given piece's look card via hash. */
+export function getShopPieceHref(collectionSlug: string, pieceSlug: string): string {
+  return `/collection/${collectionSlug}/shop#${pieceSlug}`;
+}
+
 export function buildShopGroups(collection: Collection): SwiperGroup[] {
   const looks = getShopLooks(collection);
 
@@ -37,6 +42,9 @@ export function buildShopGroups(collection: Collection): SwiperGroup[] {
           ? `${pieces[0].category} \u00b7 ${pieces.length} variants \u00b7 ${pieces[0].price}`
           : "Swipe right to shop every piece from this look.",
       coverHref: pieces[0] ? `/product/${pieces[0].slug}` : undefined,
+      // Product slugs used as URL hashes so returning from a detail page
+      // (or sharing a shop URL) lands on this exact look, not the top.
+      anchorIds: pieces.map((product) => product.slug),
       linkLabel: singlePiece ? "View full details" : undefined,
       persistentOverlay: Boolean(singlePiece),
       items: singlePiece

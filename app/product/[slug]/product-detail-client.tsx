@@ -15,6 +15,7 @@ import {
   getLookSiblings,
   getRelatedProducts,
 } from "@/lib/products";
+import { getShopPieceHref } from "@/lib/shop-groups";
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
 
@@ -48,7 +49,7 @@ function ProductIdentity({
   collection: Collection | undefined;
 }) {
   const backHref = collection
-    ? `/collection/${collection.slug}/shop`
+    ? getShopPieceHref(collection.slug, product.slug)
     : "/collections";
   const backLabel = collection ? collection.name : "Collections";
 
@@ -56,6 +57,7 @@ function ProductIdentity({
     <div className="flex h-full flex-col justify-center gap-10">
       <Link
         href={backHref}
+        scroll={false}
         className="inline-flex w-fit items-center gap-2 text-[10px] uppercase tracking-[0.28em] text-muted-foreground transition-colors duration-300 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
       >
         <ArrowLeft className="h-3 w-3" aria-hidden />

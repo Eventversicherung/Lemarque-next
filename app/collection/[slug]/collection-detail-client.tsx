@@ -131,7 +131,7 @@ function EmbeddedShop({ collection }: { collection: Collection }) {
           Shop the Collection
         </p>
       </ScrollReveal>
-      <FullScreenSwiper groups={groups} embedded />
+      <FullScreenSwiper groups={groups} embedded edgeToEdge />
     </section>
   );
 }

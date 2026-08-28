@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
@@ -17,15 +17,34 @@ const navLinks = [
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 16);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-linear-to-b from-black/70 via-black/25 to-transparent"
-        />
+      <header
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-300",
+          scrolled
+            ? "border-b border-white/8 bg-black/60 backdrop-blur-md"
+            : "border-b border-transparent"
+        )}
+      >
+        {!scrolled && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-linear-to-b from-black/70 via-black/25 to-transparent"
+          />
+        )}
         <nav className="relative flex items-center justify-between px-6 md:px-10 py-4 md:py-5">
           <BrandLogo size="sm" priority />
 
