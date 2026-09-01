@@ -5,6 +5,12 @@ export fn dielectricFresnel(ior: f32, facing: f32) -> f32 {
   return f0 + (1.0 - f0) * pow(1.0 - facing, 5.0);
 }
 
+// Same Blinn-Phong lobe as fft-ocean-surface/ocean-surface.wgsl.
+export fn blinnSpecular(n: vec3f, viewDir: vec3f, lightDir: vec3f, hardness: f32) -> f32 {
+  let h = normalize(lightDir + viewDir);
+  return pow(max(dot(n, h), 0.0), hardness);
+}
+
 export fn acesTonemap(x: vec3f) -> vec3f {
   let a = 2.51;
   let b = 0.03;
