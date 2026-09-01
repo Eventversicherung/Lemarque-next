@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "vgpu": {
+      "url": "https://vgpu.sh/api/mcp"
+    },
+    "vgpu-local": {
+      "command": "npx",
+      "args": ["-y", "vgpu", "mcp", "--project-from-cwd"]
+    }
+  }
+}

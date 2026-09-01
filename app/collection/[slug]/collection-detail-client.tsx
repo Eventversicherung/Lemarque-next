@@ -15,6 +15,7 @@ import {
   hasShoppableLooks,
 } from "@/lib/collections";
 import { buildShopGroups } from "@/lib/shop-groups";
+import { MalumOceanHero } from "@/components/malum-ocean-hero";
 
 function HeroParallax({ collection }: { collection: Collection }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -28,19 +29,23 @@ function HeroParallax({ collection }: { collection: Collection }) {
   return (
     <section ref={ref} className="relative h-[70vh] md:h-[85vh] overflow-hidden">
       <motion.div className="absolute inset-0" style={{ y }}>
-        <Image
-          src={collection.heroImage.src}
-          alt={collection.heroImage.alt}
-          fill
-          priority
-          className="object-cover"
-          style={
-            collection.heroImagePosition
-              ? { objectPosition: collection.heroImagePosition }
-              : undefined
-          }
-          sizes="100vw"
-        />
+        {collection.slug === "malum" ? (
+          <MalumOceanHero collection={collection} />
+        ) : (
+          <Image
+            src={collection.heroImage.src}
+            alt={collection.heroImage.alt}
+            fill
+            priority
+            className="object-cover"
+            style={
+              collection.heroImagePosition
+                ? { objectPosition: collection.heroImagePosition }
+                : undefined
+            }
+            sizes="100vw"
+          />
+        )}
         <div className="absolute inset-0 bg-linear-to-t from-background via-black/30 to-transparent" />
       </motion.div>
 

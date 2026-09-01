@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# vgpu example download staging (hash-verified pulls write lock/tmp next to the example)
+**/.vgpu.lock/
+**/.*.vgpu-tmp-*
