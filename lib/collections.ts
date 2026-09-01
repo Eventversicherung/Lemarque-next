@@ -78,16 +78,12 @@ export const collections: Collection[] = [
       "The newest LEMARQUE collection. Scroll through every look, swipe to shop each piece.",
     longDescription:
       "MALUM is the newest chapter for LEMARQUE: gowns cut like armor, cashmere outerwear closed with shark-tooth hardware, and leather goods built to outlast trend cycles. Scroll through every look, swipe right to shop the piece, and tap through to its own page for the full story.",
-    // Wide/landscape mood shot (aerial view of a stormy sea at night, a
-    // ship's light cutting through the waves) so the Collection Hub hero
-    // fills wide desktop viewports without an awkward crop the way a
-    // portrait garment photo would. The focal point (glowing wave crest +
-    // light beam, with a faint underwater beast in the cone) sits near the
-    // horizontal center, so the default centered object-position crops
-    // cleanly even on ultra-wide screens.
+    // Aerial night plate: boat on the right, searchlight shooting left
+    // across a dark navy sea. The WebGPU hero samples this still and
+    // refracts the beam with live waves.
     heroImage: {
-      src: "/collections/malum/hero/malum-hero-amber.webp",
-      alt: "MALUM Collection | Stormy sea at night, a searchlight over dark water",
+      src: "/collections/malum/hero/malum-hero-night.webp",
+      alt: "MALUM Collection | Aerial night sea, a boat searchlight over dark water",
       width: 1536,
       height: 1024,
     },

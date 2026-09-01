@@ -1,4 +1,4 @@
-import { clock, effect, frameLoop, init, surface } from "vgpu";
+import { clock, effect, frameLoop, init, sampler, surface } from "vgpu";
 import type { Effect, FrameLoopHandle, Gpu, Surface } from "vgpu";
 import oceanShader from "./shaders/malum-ocean.wgsl";
 
@@ -13,13 +13,38 @@ export type MalumOceanOptions = {
   onError?: (error: unknown) => void;
 };
 
-const LIGHT_POS: readonly [number, number, number] = [10.5, 22.0, -4.0];
-const LIGHT_DIR: readonly [number, number, number] = [-0.32, -0.78, -0.54];
-const WIND_ANGLE = 0.42;
-const WIND_SPEED = 14;
+export const MALUM_PLATE_SRC = "/collections/malum/hero/malum-hero-night.webp";
+
+const WIND_ANGLE = 3.05;
+const WIND_SPEED = 11;
+const BOAT_UV: readonly [number, number] = [0.78, 0.5];
+const BEAM_DIR: readonly [number, number] = [-1, 0.04];
+
+const TEXTURE_USAGE = 0x02 | 0x04 | 0x10;
 
 function isWebGpuAvailable(): boolean {
   return typeof navigator !== "undefined" && "gpu" in navigator;
+}
+
+async function loadPlateTexture(gpu: Gpu, url: string) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to load MALUM plate (${response.status})`);
+  }
+  const bitmap = await createImageBitmap(await response.blob());
+  const texture = gpu.gpu.createTexture({
+    label: "malum-plate",
+    size: [bitmap.width, bitmap.height],
+    format: "rgba8unorm",
+    usage: TEXTURE_USAGE,
+  });
+  gpu.gpu.queue.copyExternalImageToTexture(
+    { source: bitmap },
+    { texture },
+    [bitmap.width, bitmap.height],
+  );
+  bitmap.close();
+  return texture;
 }
 
 export function startMalumOcean(
@@ -34,16 +59,17 @@ export function startMalumOcean(
   let gpu: Gpu | undefined;
   let canvasSurface: Surface | undefined;
   let ocean: Effect | undefined;
+  let plate: ReturnType<Gpu["gpu"]["createTexture"]> | undefined;
   let unsubscribeResize: (() => void) | undefined;
 
   const params = {
     time: 0,
     windSpeed: WIND_SPEED,
     texel: [1 / 16, 1 / 9] as [number, number],
-    lightPos: [...LIGHT_POS] as [number, number, number],
-    quality: reduced ? 0 : 1,
-    lightDir: [...LIGHT_DIR] as [number, number, number],
+    boatUv: [...BOAT_UV] as [number, number],
+    beamDir: [...BEAM_DIR] as [number, number],
     windAngle: WIND_ANGLE,
+    quality: reduced ? 0 : 1,
   };
 
   const startLoop = () => {
@@ -88,9 +114,24 @@ export function startMalumOcean(
         canvasSurface.texelSize[1],
       ];
 
+      plate = await loadPlateTexture(gpu, MALUM_PLATE_SRC);
+      if (disposed) {
+        plate.destroy();
+        return;
+      }
+
       ocean = effect(gpu, oceanShader, {
         label: "malum-ocean",
-        set: { params },
+        set: {
+          params,
+          plate,
+          samp: sampler(gpu, {
+            minFilter: "linear",
+            magFilter: "linear",
+            addressModeU: "clamp-to-edge",
+            addressModeV: "clamp-to-edge",
+          }),
+        },
       });
       if (disposed) return;
 
@@ -115,6 +156,8 @@ export function startMalumOcean(
       disposed = true;
       stopLoop();
       unsubscribeResize?.();
+      plate?.destroy();
+      plate = undefined;
       gpu?.dispose();
       gpu = undefined;
       canvasSurface = undefined;

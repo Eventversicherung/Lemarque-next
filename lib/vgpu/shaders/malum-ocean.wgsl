@@ -1,5 +1,4 @@
-import { dielectricFresnel, acesTonemap } from "./lighting.wgsl";
-import { skyColor } from "./sky.wgsl";
+import { dielectricFresnel } from "./lighting.wgsl";
 import { sampleWaves } from "./waves.wgsl";
 import { fbmSimplex2d } from "@vgpu/wgsl-std/noise/simplex";
 
@@ -7,118 +6,73 @@ struct Params {
   time: f32,
   windSpeed: f32,
   texel: vec2f,
-  lightPos: vec3f,
-  quality: f32,
-  lightDir: vec3f,
+  boatUv: vec2f,
+  beamDir: vec2f,
   windAngle: f32,
+  quality: f32,
 }
 
 @group(0) @binding(0) var<uniform> params: Params;
+@group(0) @binding(1) var plate: texture_2d<f32>;
+@group(0) @binding(2) var samp: sampler;
 
-fn cameraRay(uv: vec2f) -> vec3f {
-  let ndc = vec2f(uv.x * 2.0 - 1.0, 1.0 - uv.y * 2.0);
-  let aspect = params.texel.y / max(params.texel.x, 1.0e-6);
-  let fwd = normalize(vec3f(0.12, -0.38, -1.0));
-  let right = normalize(cross(fwd, vec3f(0.0, 1.0, 0.0)));
-  let up = cross(right, fwd);
-  return normalize(fwd + right * ndc.x * aspect * 0.72 + up * ndc.y * 0.55);
+fn viewSize() -> vec2f {
+  return 1.0 / max(params.texel, vec2f(1.0e-5));
 }
 
-fn intersectWater(ro: vec3f, rd: vec3f) -> f32 {
-  if (rd.y >= -1.0e-4) {
-    return -1.0;
-  }
-  var t = (0.4 - ro.y) / rd.y;
-  if (t < 0.0) {
-    return -1.0;
-  }
-  let iters = select(1, 2, params.quality > 0.5);
-  for (var i = 0; i < 2; i++) {
-    if (i >= iters) { break; }
-    let p = ro + rd * t;
-    let wave = sampleWaves(p.xz, params.time, params.windAngle, params.windSpeed, params.quality);
-    let err = p.y - wave.displacement.y;
-    t += err / min(rd.y, -0.04);
-  }
-  return t;
+fn coverUv(uv: vec2f) -> vec2f {
+  let tex = vec2f(textureDimensions(plate));
+  let view = viewSize();
+  let scale = max(view.x / max(tex.x, 1.0), view.y / max(tex.y, 1.0));
+  return (uv - 0.5) * (view / (tex * scale)) + 0.5;
 }
 
-fn coneMask(p: vec3f) -> f32 {
-  let toPoint = p - params.lightPos;
-  let dist = length(toPoint);
-  let dir = toPoint / max(dist, 1.0e-3);
-  let beam = normalize(params.lightDir);
-  let along = max(dot(dir, beam), 0.0);
-  let cone = smoothstep(0.78, 0.94, along);
-  let reach = exp(-dist * 0.018);
-  return cone * reach;
+fn beamMask(uv: vec2f) -> f32 {
+  let dir = normalize(params.beamDir);
+  let origin = params.boatUv;
+  let aspect = viewSize().y / max(viewSize().x, 1.0);
+  let toPoint = (uv - origin) * vec2f(1.0, aspect);
+  let along = dot(toPoint, dir);
+  let side = abs(dot(toPoint, vec2f(-dir.y, dir.x)));
+  let width = 0.012 + along * 0.16;
+  let cone = 1.0 - smoothstep(width, width + 0.035, side);
+  let shaft = smoothstep(-0.012, 0.02, along) * (1.0 - smoothstep(0.52, 0.92, along));
+  return clamp(cone * shaft, 0.0, 1.0);
 }
 
-fn volumetricLight(ro: vec3f, rd: vec3f, tHit: f32) -> vec3f {
-  let tFar = select(min(tHit, 70.0), 48.0, tHit < 0.0);
-  let steps = select(8, 16, params.quality > 0.5);
-  var fog = 0.0;
-  for (var i = 0; i < 16; i++) {
-    if (i >= steps) { break; }
-    let t = (f32(i) + 0.5) / f32(steps) * tFar;
-    let p = ro + rd * t;
-    fog += coneMask(p) * exp(-t * 0.03);
-  }
-  fog *= tFar / f32(steps);
-  return vec3f(1.35, 0.58, 0.16) * fog * 0.085;
+fn samplePlate(uv: vec2f) -> vec3f {
+  let mapped = coverUv(uv);
+  let inside = all(mapped >= vec2f(0.0)) && all(mapped <= vec2f(1.0));
+  let texel = textureSampleLevel(plate, samp, clamp(mapped, vec2f(0.0), vec2f(1.0)), 0.0).rgb;
+  return select(vec3f(0.004, 0.012, 0.03), texel, inside);
 }
 
 @fragment fn fs_main(@location(0) uv: vec2f) -> @location(0) vec4f {
-  let ro = vec3f(0.0, 11.5, 20.0);
-  let rd = cameraRay(uv);
-  let t = intersectWater(ro, rd);
+  let world = uv * vec2f(22.0, 12.0);
+  let wave = sampleWaves(world, params.time, params.windAngle, params.windSpeed, params.quality);
+  let chop = fbmSimplex2d(world * 0.35 + vec2f(params.time * 0.12, 0.0), 3, 2.17, 0.5);
 
-  var col: vec3f;
-  if (t < 0.0) {
-    col = skyColor(rd, params.lightDir);
-  } else {
-    let world = ro + rd * t;
-    let wave = sampleWaves(world.xz, params.time, params.windAngle, params.windSpeed, params.quality);
-    let n = wave.normal;
-    let v = normalize(ro - world);
-    let sun = normalize(-params.lightDir);
+  let beam = beamMask(uv);
+  let n = wave.normal;
+  let plateUv = uv + n.xz * mix(0.006, 0.03, beam);
+  var col = samplePlate(plateUv);
 
-    let chop = fbmSimplex2d(world.xz * 0.11 + vec2f(params.time * 0.15, 0.0), 3, 2.17, 0.5);
-    let foam = smoothstep(0.55, 0.12, wave.jacobian) * (0.65 + 0.35 * chop);
+  col *= vec3f(0.7, 0.84, 1.1);
+  col = mix(col, vec3f(0.008, 0.02, 0.055), 0.16);
 
-    let r = reflect(-v, n);
-    let refl = skyColor(r, params.lightDir);
-    let facing = max(dot(n, v), 0.0);
-    let fres = dielectricFresnel(1.333, facing);
+  let facing = max(n.y, 0.0);
+  let fres = dielectricFresnel(1.333, facing);
+  let foam = smoothstep(0.62, 0.18, wave.jacobian) * (0.55 + 0.45 * chop);
 
-    let deep = vec3f(0.004, 0.02, 0.04);
-    let shallow = vec3f(0.04, 0.11, 0.14);
-    var water = mix(deep, shallow, pow(facing, 0.55));
-    let spot = coneMask(world);
-    water += vec3f(0.95, 0.42, 0.1) * spot * 0.55;
-    water += vec3f(0.85, 0.28, 0.08) * pow(max(dot(v, -sun), 0.0), 3.0) * 0.25;
+  let breakHi = vec3f(0.62, 0.82, 1.0);
+  col += breakHi * foam * beam * 0.6;
+  col += vec3f(0.22, 0.4, 0.78) * beam * (0.1 + 0.28 * fres);
+  col += vec3f(0.85, 0.93, 1.0) * pow(max(-n.x, 0.0), 6.0) * beam * 0.28;
 
-    let fresW = mix(0.04, 0.9, fres);
-    col = mix(water, refl, fresW);
+  let grain = fbmSimplex2d(uv * 22.0 + vec2f(params.time * 0.03, 0.0), 2, 2.0, 0.5);
+  col += grain * 0.008;
 
-    let h = normalize(sun + v);
-    let spec = pow(max(dot(n, h), 0.0), 280.0);
-    col += vec3f(1.8, 0.95, 0.4) * spec * (1.2 + 3.5 * spot);
-
-    col = mix(col, vec3f(0.98, 0.86, 0.68), foam * (0.35 + 0.65 * spot));
-
-    let fog = smoothstep(28.0, 78.0, t);
-    col = mix(col, skyColor(normalize(vec3f(rd.x, 0.02, rd.z)), params.lightDir), fog);
-  }
-
-  col += volumetricLight(ro, rd, t);
-
-  let grain = fbmSimplex2d(uv * 18.0 + vec2f(params.time * 0.04, 0.0), 2, 2.0, 0.5);
-  col += grain * 0.012;
-
-  col *= 0.72;
-  col = pow(acesTonemap(col), vec3f(1.0 / 2.2));
-  let vignette = 1.0 - 0.32 * dot(uv - vec2f(0.5), uv - vec2f(0.5));
+  let vignette = 1.0 - 0.22 * dot(uv - vec2f(0.5), uv - vec2f(0.5));
   col *= vignette;
 
   return vec4f(clamp(col, vec3f(0.0), vec3f(1.0)), 1.0);
