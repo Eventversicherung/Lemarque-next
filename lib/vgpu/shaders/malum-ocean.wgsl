@@ -91,21 +91,30 @@ fn hushMask(plateUv: vec2f) -> f32 {
   return 1.0 - smoothstep(0.48, 1.12, length(e));
 }
 
-fn contactShadow(plateUv: vec2f) -> f32 {
+fn contactShadow(plateUv: vec2f, rock: vec2f) -> f32 {
   let a = boatAxes(plateUv);
-  let e = vec2f((a.x - 0.03) / 0.1, a.y / 0.052);
+  let e = vec2f((a.x - 0.03 + rock.x * 0.01) / 0.1, (a.y + rock.y * 0.007) / 0.052);
   return 1.0 - smoothstep(0.42, 1.18, length(e));
 }
 
-fn beamMask(plateUv: vec2f, n: vec3f) -> f32 {
-  let dir = normalize(params.beamDir);
-  let toPoint = toBoat(plateUv) + n.xz * 0.02;
+fn beamMask(plateUv: vec2f, n: vec3f, rock: vec2f) -> f32 {
+  // Stay on the painted shaft. Rock only eases the rim; wave normals chew the edge.
+  let dir = normalize(params.beamDir + rock * 0.018);
+  let toPoint = toBoat(plateUv) + n.xz * 0.024;
   let along = dot(toPoint, dir);
   let side = abs(dot(toPoint, vec2f(-dir.y, dir.x)));
-  let width = 0.02 + along * 0.17 + n.x * 0.012;
-  let cone = 1.0 - smoothstep(width * 0.18, width + 0.05, side);
+  let width = 0.02 + along * 0.17 + n.x * 0.018 + rock.x * 0.008;
+  let cone = 1.0 - smoothstep(width * 0.16, width + 0.055, side);
   let shaft = smoothstep(-0.02, 0.04, along) * (1.0 - smoothstep(0.92, 1.38, along));
   return clamp(cone * shaft, 0.0, 1.0);
+}
+
+fn boatRock(t: f32) -> vec2f {
+  let oct = select(1, 2, params.quality > 0.75);
+  return vec2f(
+    fbmSimplex2d(vec2f(t * 0.12, 2.6), oct, 2.08, 0.5),
+    fbmSimplex2d(vec2f(t * 0.08 + 3.1, 0.4), 1, 2.05, 0.5),
+  );
 }
 
 fn worldScale(uv: vec2f) -> vec2f {
@@ -144,7 +153,8 @@ fn worldScale(uv: vec2f) -> vec2f {
   let over = clamp(crest * mix(0.22, 0.9, fres), 0.0, 1.0);
   let through = 1.0 - over;
 
-  let beam = beamMask(plateUv, n);
+  let rock = boatRock(params.time);
+  let beam = beamMask(plateUv, n, rock);
   let lamp = smoothstep(0.55, 0.92, bodyL);
   let deep = smoothstep(0.14, 0.03, bodyL);
   let swim = vec2f(sin(params.time * 0.05), cos(params.time * 0.038)) * 0.004 * deep * water;
@@ -170,21 +180,33 @@ fn worldScale(uv: vec2f) -> vec2f {
   let cau = pow(max(chop * 0.5 + 0.5, 0.0), 3.4) * (0.35 + 0.65 * nDotL);
 
   let cool = vec3f(0.9, 0.95, 1.0);
-  col += cool * shaft * water * (0.04 + 0.08 * cau * through + 0.2 * spec * over);
-  col += vec3f(0.96, 0.98, 1.0) * spec * nDotL * over * shaft * water * 0.26;
+  let seaGain = mix(
+    0.86,
+    1.16,
+    clamp(
+      0.5 + 0.3 * rock.x + 0.16 * rock.y + 0.28 * (nDotL - 0.32) + 0.14 * crest,
+      0.0,
+      1.0,
+    ),
+  );
+  let trough = smoothstep(0.1, -0.14, height);
+  col += cool * shaft * water * (0.04 + 0.09 * cau * through + 0.2 * spec * over) * seaGain;
+  col += vec3f(0.96, 0.98, 1.0) * spec * nDotL * over * shaft * water * 0.28 * seaGain;
   col += vec3f(0.8, 0.9, 0.97) * foam * lit * 0.1;
-  col += vec3f(0.18, 0.32, 0.48) * cau * facing * shaft * through * water * 0.06;
+  col += vec3f(0.18, 0.32, 0.48) * cau * facing * shaft * through * water * (0.05 + 0.05 * trough) * seaGain;
   col += vec3f(0.1, 0.16, 0.24) * fres * (1.0 - facing) * water * 0.05;
 
   let hullBody = hull * (1.0 - lamp);
   let occ = (1.0 - hull) * hush * (1.0 - lamp);
-  col *= 1.0 - contactShadow(plateUv) * (1.0 - lamp) * (1.0 - shaft * 0.45) * 0.48;
+  col *= 1.0 - contactShadow(plateUv, rock) * (1.0 - lamp) * (1.0 - shaft * 0.45) * (0.48 + rock.x * 0.07);
   col *= 1.0 - occ * (1.0 - shaft * 0.62) * 0.26;
+  let lee = clamp(0.46 - nDotL, 0.0, 1.0) * water * (1.0 - lamp);
+  col *= 1.0 - lee * mix(0.13, 0.035, shaft);
   col += vec3f(0.12, 0.15, 0.18) * hullBody * 0.22;
   col += vec3f(0.22, 0.26, 0.3) * hullBody * (0.1 + 0.16 * facing);
 
   col *= mix(1.0, 0.88, deep * (1.0 - shaft * 0.45) * live);
-  col += vec3f(0.05, 0.12, 0.22) * deep * through * shaft * cau * water * 0.14;
+  col += vec3f(0.05, 0.12, 0.22) * deep * through * shaft * cau * water * 0.14 * seaGain;
 
   let cloud = fbmSimplex2d(uv * 0.42 + vec2f(params.time * 0.0055, params.time * 0.0032), 2, 2.0, 0.55);
   let cloudShadow = smoothstep(-0.28, 0.5, cloud);
