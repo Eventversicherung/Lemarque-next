@@ -11,9 +11,10 @@ export type MalumOceanOptions = {
   reduced?: boolean;
   onReady?: () => void;
   onError?: (error: unknown) => void;
+  onPulse?: (pulse: number) => void;
 };
 
-export const MALUM_PLATE_SRC = "/collections/malum/hero/malum-hero-night.png?v=12";
+export const MALUM_PLATE_SRC = "/collections/malum/hero/malum-hero-night.png?v=13";
 
 const WIND_ANGLE = 2.44;
 const WIND_SPEED = 12;
@@ -21,6 +22,12 @@ const BOAT_UV: readonly [number, number] = [0.848, 0.181];
 const BEAM_DIR: readonly [number, number] = [-0.53, 0.85];
 
 const TEXTURE_USAGE = 0x02 | 0x04 | 0x10;
+
+/** Slow searchlight breath (~7.4s). Keep in lockstep with the shader uniform. */
+export function malumSearchlightPulse(time: number): number {
+  const breath = 0.5 + 0.5 * Math.sin(time * 0.85 + 1.15);
+  return 0.86 + breath * 0.34;
+}
 
 function isWebGpuAvailable(): boolean {
   return typeof navigator !== "undefined" && "gpu" in navigator;
@@ -52,7 +59,7 @@ export function startMalumOcean(
   options: MalumOceanOptions = {},
 ): MalumOceanHandle {
   const reduced = Boolean(options.reduced);
-  const { onReady, onError } = options;
+  const { onReady, onError, onPulse } = options;
   let disposed = false;
   let paused = false;
   let loop: FrameLoopHandle | undefined;
@@ -70,6 +77,7 @@ export function startMalumOcean(
     beamDir: [...BEAM_DIR] as [number, number],
     windAngle: WIND_ANGLE,
     quality: reduced ? 0.8 : 1,
+    pulse: 1,
   };
 
   const startLoop = () => {
@@ -81,11 +89,14 @@ export function startMalumOcean(
       (frame) => {
         if (paused || disposed || !canvasSurface || !ocean) return;
         simTime += Math.min(Math.max(time.deltaTime, 0), 1 / 45);
+        const pulse = malumSearchlightPulse(simTime);
         ocean.set({
           params: {
             time: simTime,
+            pulse,
           },
         });
+        onPulse?.(pulse);
         frame.pass(canvasSurface, ocean);
       },
       { fps: reduced ? 30 : 0 },

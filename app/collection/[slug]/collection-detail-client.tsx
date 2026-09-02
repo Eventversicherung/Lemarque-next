@@ -76,7 +76,11 @@ function HeroParallax({ collection }: { collection: Collection }) {
           <p className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-white/50 mb-3">
             {collection.season} {collection.year}
           </p>
-          <h1 className="font-brand text-4xl md:text-6xl lg:text-7xl tracking-[0.35em] text-white">
+          <h1
+            className={`font-brand text-4xl md:text-6xl lg:text-7xl tracking-[0.35em] text-white ${
+              collection.slug === "malum" ? "malum-title-rim" : ""
+            }`}
+          >
             {collection.name}
           </h1>
         </motion.div>

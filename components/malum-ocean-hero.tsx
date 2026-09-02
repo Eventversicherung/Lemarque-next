@@ -36,12 +36,22 @@ export function MalumOceanHero({ collection }: { collection: Collection }) {
     handle = startMalumOcean(canvas, {
       reduced: isMobilePerf(),
       onReady: () => {
-        if (!cancelled) setLive(true);
+        if (!cancelled) {
+          document.documentElement.classList.add("malum-hero-live");
+          setLive(true);
+        }
       },
       onError: (error) => {
         if (process.env.NODE_ENV !== "production") {
           console.error("[malum-ocean]", error);
         }
+      },
+      onPulse: (pulse) => {
+        const glow = Math.max(0, (pulse - 0.92) / 0.28);
+        document.documentElement.style.setProperty(
+          "--malum-glow",
+          glow.toFixed(3),
+        );
       },
     });
 
@@ -64,6 +74,8 @@ export function MalumOceanHero({ collection }: { collection: Collection }) {
       document.removeEventListener("visibilitychange", syncPause);
       observer.disconnect();
       handle?.stop();
+      document.documentElement.classList.remove("malum-hero-live");
+      document.documentElement.style.removeProperty("--malum-glow");
     };
   }, []);
 
