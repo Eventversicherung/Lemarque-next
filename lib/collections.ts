@@ -86,7 +86,7 @@ export const collections: Collection[] = [
       width: 1536,
       height: 1024,
     },
-    heroImagePosition: "82% 22%",
+    heroImagePosition: "80% 50%",
     // Same generated scene with the LEMARQUE mark and collection name
     // burned in, sized to the 1200x630 Open Graph standard - chat apps
     // (WhatsApp, Telegram, iMessage, ...) only ever show this flat image,

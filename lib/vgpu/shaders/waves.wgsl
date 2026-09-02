@@ -37,7 +37,7 @@ fn gerstnerOne(
 export fn sampleWaves(p: vec2f, time: f32, windAngle: f32, windSpeed: f32, quality: f32) -> WaveSample {
   let wind = vec2f(cos(windAngle), sin(windAngle));
   let crossWind = vec2f(-wind.y, wind.x);
-  let amp = clamp(windSpeed / 18.0, 0.25, 1.35);
+  let amp = clamp(windSpeed / 22.0, 0.18, 0.85);
 
   var acc: WaveSample;
   acc.displacement = vec3f(0.0);
@@ -49,11 +49,11 @@ export fn sampleWaves(p: vec2f, time: f32, windAngle: f32, windSpeed: f32, quali
     let w4 = normalize(wind + crossWind * 0.7);
     let w5 = normalize(wind - crossWind * 0.85);
     let waves = array<vec4f, 5>(
-      vec4f(wind.x, wind.y, 0.4 * amp, 18.0),
-      vec4f(w2.x, w2.y, 0.28 * amp, 8.0),
-      vec4f(w3.x, w3.y, 0.18 * amp, 4.2),
-      vec4f(w4.x, w4.y, 0.12 * amp, 2.3),
-      vec4f(w5.x, w5.y, 0.08 * amp, 1.15),
+      vec4f(wind.x, wind.y, 0.28 * amp, 16.0),
+      vec4f(w2.x, w2.y, 0.18 * amp, 7.5),
+      vec4f(w3.x, w3.y, 0.12 * amp, 4.0),
+      vec4f(w4.x, w4.y, 0.08 * amp, 2.2),
+      vec4f(w5.x, w5.y, 0.05 * amp, 1.2),
     );
   let phases = array<f32, 5>(0.0, 1.7, 3.1, 4.6, 0.9);
   let count = select(4, 5, quality > 0.75);

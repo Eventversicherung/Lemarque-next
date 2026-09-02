@@ -13,10 +13,10 @@ export type MalumOceanOptions = {
   onError?: (error: unknown) => void;
 };
 
-export const MALUM_PLATE_SRC = "/collections/malum/hero/malum-hero-night.png?v=6";
+export const MALUM_PLATE_SRC = "/collections/malum/hero/malum-hero-night.png?v=7";
 
 const WIND_ANGLE = 2.44;
-const WIND_SPEED = 16;
+const WIND_SPEED = 7;
 const BOAT_UV: readonly [number, number] = [0.83, 0.19];
 const BEAM_DIR: readonly [number, number] = [-0.53, 0.85];
 

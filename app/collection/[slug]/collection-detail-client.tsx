@@ -23,11 +23,20 @@ function HeroParallax({ collection }: { collection: Collection }) {
     target: ref,
     offset: ["start start", "end start"],
   });
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
+  const y = useTransform(
+    scrollYProgress,
+    [0, 1],
+    collection.slug === "malum" ? ["0%", "0%"] : ["0%", "25%"],
+  );
   const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
   return (
-    <section ref={ref} className="relative h-[70vh] md:h-[85vh] overflow-hidden">
+    <section
+      ref={ref}
+      className={`relative overflow-hidden ${
+        collection.slug === "malum" ? "h-dvh" : "h-[70vh] md:h-[85vh]"
+      }`}
+    >
       <motion.div className="absolute inset-0" style={{ y }}>
         {collection.slug === "malum" ? (
           <MalumOceanHero collection={collection} />
@@ -49,7 +58,7 @@ function HeroParallax({ collection }: { collection: Collection }) {
         <div
           className={`absolute inset-0 ${
             collection.slug === "malum"
-              ? "bg-linear-to-t from-background/70 via-transparent to-transparent"
+              ? "bg-linear-to-t from-background/35 via-transparent to-transparent"
               : "bg-linear-to-t from-background via-black/30 to-transparent"
           }`}
         />

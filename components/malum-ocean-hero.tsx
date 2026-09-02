@@ -85,7 +85,7 @@ export function MalumOceanHero({ collection }: { collection: Collection }) {
       <canvas
         ref={canvasRef}
         aria-hidden
-        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+        className={`absolute inset-0 h-full w-full transition-opacity duration-700 ${
           live ? "opacity-100" : "opacity-0"
         }`}
         style={{ display: "block", pointerEvents: "none" }}
