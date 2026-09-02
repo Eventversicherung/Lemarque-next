@@ -109,12 +109,12 @@ fn contactShadow(plateUv: vec2f, rock: vec2f) -> f32 {
 }
 
 fn beamMaskAt(plateUv: vec2f, origin: vec2f, dir0: vec2f, n: vec3f, rock: vec2f) -> f32 {
-  let dir = normalize(dir0 + rock * 0.016);
-  let toPoint = toLamp(plateUv, origin) + n.xz * 0.024;
+  let dir = normalize(dir0);
+  let toPoint = toLamp(plateUv, origin) + n.xz * 0.02;
   let along = dot(toPoint, dir);
   let side = abs(dot(toPoint, vec2f(-dir.y, dir.x)));
-  let width = 0.015 + along * 0.145 + n.x * 0.016 + rock.x * 0.007;
-  let cone = 1.0 - smoothstep(width * 0.16, width + 0.048, side);
+  let width = 0.013 + along * 0.132 + n.x * 0.012 + rock.x * 0.004;
+  let cone = 1.0 - smoothstep(width * 0.14, width + 0.042, side);
   let shaft = smoothstep(-0.02, 0.04, along) * (1.0 - smoothstep(0.92, 1.38, along));
   return clamp(cone * shaft, 0.0, 1.0);
 }
@@ -131,6 +131,13 @@ fn boatRock(t: f32) -> vec2f {
     fbmSimplex2d(vec2f(t * 0.12, 2.6), oct, 2.08, 0.5),
     fbmSimplex2d(vec2f(t * 0.08 + 3.1, 0.4), 1, 2.05, 0.5),
   );
+}
+
+fn searchSway(t: f32, seed: f32) -> f32 {
+  let oct = select(1, 2, params.quality > 0.75);
+  let slow = fbmSimplex2d(vec2f(t * 0.048 + seed, seed * 1.7), oct, 2.02, 0.52);
+  let nod = fbmSimplex2d(vec2f(t * 0.031 + seed * 0.4, 4.8), 1, 2.04, 0.5);
+  return slow * 0.72 + nod * 0.28;
 }
 
 fn worldScale(uv: vec2f) -> vec2f {
@@ -173,8 +180,10 @@ fn worldScale(uv: vec2f) -> vec2f {
   let rockB = boatRock(params.time + 19.0);
   let originA = lampA();
   let originB = lampB();
-  let dirA = rot2(params.beamDir, 0.032);
-  let dirB = rot2(params.beamDir, -0.048);
+  let yawA = searchSway(params.time, 1.4) * 0.058;
+  let yawB = searchSway(params.time, 6.9) * 0.064;
+  let dirA = rot2(params.beamDir, 0.016 + yawA);
+  let dirB = rot2(params.beamDir, -0.02 + yawB);
   let beamA = beamMaskAt(plateUv, originA, dirA, n, rockA);
   let beamB = beamMaskAt(plateUv, originB, dirB, n, rockB);
   let beam = max(beamA, beamB);
@@ -189,7 +198,7 @@ fn worldScale(uv: vec2f) -> vec2f {
 
   let painted = smoothstep(0.04, 0.15, luma(col));
   let lit = clamp(painted * 1.08 + beam * painted * 0.55, 0.0, 1.0);
-  let shaft = max(painted, beam * 0.65);
+  let shaft = max(painted, max(beamA * 0.52, beamB * 0.78));
   let split = beamB / max(beamA + beamB, 1.0e-4);
 
   let lightDir = normalize(
@@ -207,8 +216,8 @@ fn worldScale(uv: vec2f) -> vec2f {
   let cau = pow(max(chop * 0.5 + 0.5, 0.0), 3.4) * (0.35 + 0.65 * nDotL);
 
   let xenon = vec3f(0.98, 0.93, 0.86);
-  let carbon = vec3f(1.0, 0.82, 0.52);
-  let lightCol = mix(xenon, carbon, 0.34 + 0.42 * split);
+  let carbon = vec3f(1.0, 0.76, 0.42);
+  let lightCol = mix(xenon, carbon, 0.4 + 0.48 * split);
   let seaGain = mix(
     0.86,
     1.16,
@@ -219,18 +228,20 @@ fn worldScale(uv: vec2f) -> vec2f {
     ),
   );
   let trough = smoothstep(0.1, -0.14, height);
-  col *= mix(vec3f(1.0), vec3f(1.0, 0.94, 0.84), shaft * 0.16);
-  col += lightCol * shaft * water * (0.04 + 0.09 * cau * through + 0.2 * spec * over) * seaGain;
-  col += mix(xenon, carbon, 0.42 + 0.4 * split) * spec * nDotL * over * shaft * water * 0.26 * seaGain;
+  col *= mix(vec3f(1.0), vec3f(1.0, 0.93, 0.8), shaft * 0.2);
+  col += xenon * beamA * water * (0.028 + 0.05 * cau * through + 0.12 * spec * over) * seaGain;
+  col += carbon * beamB * water * (0.048 + 0.07 * cau * through + 0.16 * spec * over) * seaGain;
+  col += lightCol * painted * water * (0.03 + 0.07 * cau * through + 0.16 * spec * over) * seaGain;
+  col += mix(xenon, carbon, 0.5 + 0.42 * split) * spec * nDotL * over * shaft * water * 0.26 * seaGain;
   col += vec3f(0.82, 0.88, 0.92) * foam * lit * 0.1;
   col += vec3f(0.22, 0.3, 0.42) * cau * facing * shaft * through * water * (0.05 + 0.05 * trough) * seaGain;
   col += vec3f(0.1, 0.16, 0.24) * fres * (1.0 - facing) * water * 0.05;
 
   let halo = originHalo(plateUv, originA, rockA) * mix(xenon, carbon, 0.35) * 0.16
-    + originHalo(plateUv, originB, rockB) * carbon * 0.16;
+    + originHalo(plateUv, originB, rockB) * carbon * 0.2;
   let nearA = 1.0 - smoothstep(0.0, 0.14, dot(toLamp(plateUv, originA), dirA));
   let nearB = 1.0 - smoothstep(0.0, 0.14, dot(toLamp(plateUv, originB), dirB));
-  let wash = (nearA * beamA * xenon * 0.08 + nearB * beamB * carbon * 0.1) * (0.7 + 0.3 * seaGain);
+  let wash = (nearA * beamA * xenon * 0.08 + nearB * beamB * carbon * 0.13) * (0.7 + 0.3 * seaGain);
   col += (halo * (0.55 + 0.45 * hull) + wash * water) * (0.85 + 0.15 * seaGain);
 
   let hullBody = hull * (1.0 - lamp);
