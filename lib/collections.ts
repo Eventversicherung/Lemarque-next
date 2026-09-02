@@ -78,16 +78,16 @@ export const collections: Collection[] = [
       "The newest LEMARQUE collection. Scroll through every look, swipe to shop each piece.",
     longDescription:
       "MALUM is the newest chapter for LEMARQUE: gowns cut like armor, cashmere outerwear closed with shark-tooth hardware, and leather goods built to outlast trend cycles. Scroll through every look, swipe right to shop the piece, and tap through to its own page for the full story.",
-    // Aerial night plate: pulled-back boat in the upper right, searchlight
-    // shooting down-left across a dark navy sea. A giant submerged
-    // silhouette sits in the beam. The WebGPU hero samples this still and
-    // refracts the beam with live waves.
+    // Aerial night plate: tiny boat upper-right, searchlight down-left
+    // over a colossal alien-scale submerged silhouette. The WebGPU hero
+    // samples this still and refracts the painted beam with live waves.
     heroImage: {
       src: "/collections/malum/hero/malum-hero-night.webp",
-      alt: "MALUM Collection | Aerial night sea, a boat searchlight over a submerged shadow",
+      alt: "MALUM Collection | Aerial night sea, a small boat over a colossal submerged shadow",
       width: 1536,
       height: 1024,
     },
+    heroImagePosition: "82% 20%",
     // Same generated scene with the LEMARQUE mark and collection name
     // burned in, sized to the 1200x630 Open Graph standard - chat apps
     // (WhatsApp, Telegram, iMessage, ...) only ever show this flat image,

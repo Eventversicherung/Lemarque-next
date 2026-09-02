@@ -46,7 +46,13 @@ function HeroParallax({ collection }: { collection: Collection }) {
             sizes="100vw"
           />
         )}
-        <div className="absolute inset-0 bg-linear-to-t from-background via-black/30 to-transparent" />
+        <div
+          className={`absolute inset-0 ${
+            collection.slug === "malum"
+              ? "bg-linear-to-t from-background/70 via-transparent to-transparent"
+              : "bg-linear-to-t from-background via-black/30 to-transparent"
+          }`}
+        />
       </motion.div>
 
       <motion.div

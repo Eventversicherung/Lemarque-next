@@ -14,12 +14,10 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-function isReducedProfile(): boolean {
+function isMobilePerf(): boolean {
   if (typeof window === "undefined") return true;
   return (
-    prefersReducedMotion() ||
-    window.matchMedia("(pointer: coarse)").matches ||
-    window.innerWidth < 768
+    window.matchMedia("(pointer: coarse)").matches || window.innerWidth < 768
   );
 }
 
@@ -36,7 +34,7 @@ export function MalumOceanHero({ collection }: { collection: Collection }) {
     let cancelled = false;
 
     handle = startMalumOcean(canvas, {
-      reduced: isReducedProfile(),
+      reduced: isMobilePerf(),
       onReady: () => {
         if (!cancelled) setLive(true);
       },
