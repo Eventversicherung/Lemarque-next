@@ -23,11 +23,11 @@ fn coverUv(uv: vec2f) -> vec2f {
   let view = 1.0 / max(params.texel, vec2f(1.0e-5));
   let scale = max(view.x / max(tex.x, 1.0), view.y / max(tex.y, 1.0));
   let crop = view / (tex * scale);
-  // Portrait crops the sides: keep the lamp. Landscape crops top/bottom:
-  // look down the beam so the boat is not glued to the top edge and the
-  // serpent plus storm clouds stay in frame.
+  // Nadir plate: no horizon. Portrait keeps the lamp in frame.
+  // Landscape looks a little down the beam so the serpent stays visible
+  // without gluing the boat to the top edge.
   let dir = normalize(params.beamDir);
-  let alongFocus = select(0.26, 0.08, crop.x < 0.92);
+  let alongFocus = select(0.18, 0.1, crop.x < 0.92);
   let focus = params.boatUv + dir * alongFocus;
   let half = crop * 0.5;
   let center = clamp(focus, half, vec2f(1.0) - half);
