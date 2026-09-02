@@ -206,9 +206,9 @@ fn worldScale(uv: vec2f) -> vec2f {
   let foam = smoothstep(0.72, 0.22, wave.jacobian) * (0.25 + 0.75 * max(chop, 0.0)) * crest * water;
   let cau = pow(max(chop * 0.5 + 0.5, 0.0), 3.4) * (0.35 + 0.65 * nDotL);
 
-  let xenon = vec3f(0.95, 0.96, 0.99);
-  let carbon = vec3f(1.0, 0.92, 0.78);
-  let lightCol = mix(xenon, carbon, 0.16 + 0.28 * split);
+  let xenon = vec3f(0.98, 0.93, 0.86);
+  let carbon = vec3f(1.0, 0.82, 0.52);
+  let lightCol = mix(xenon, carbon, 0.34 + 0.42 * split);
   let seaGain = mix(
     0.86,
     1.16,
@@ -219,18 +219,18 @@ fn worldScale(uv: vec2f) -> vec2f {
     ),
   );
   let trough = smoothstep(0.1, -0.14, height);
-  col *= mix(vec3f(1.0), vec3f(1.0, 0.98, 0.945), shaft * 0.08);
+  col *= mix(vec3f(1.0), vec3f(1.0, 0.94, 0.84), shaft * 0.16);
   col += lightCol * shaft * water * (0.04 + 0.09 * cau * through + 0.2 * spec * over) * seaGain;
-  col += mix(xenon, carbon, 0.28 + 0.32 * split) * spec * nDotL * over * shaft * water * 0.26 * seaGain;
+  col += mix(xenon, carbon, 0.42 + 0.4 * split) * spec * nDotL * over * shaft * water * 0.26 * seaGain;
   col += vec3f(0.82, 0.88, 0.92) * foam * lit * 0.1;
   col += vec3f(0.22, 0.3, 0.42) * cau * facing * shaft * through * water * (0.05 + 0.05 * trough) * seaGain;
   col += vec3f(0.1, 0.16, 0.24) * fres * (1.0 - facing) * water * 0.05;
 
-  let halo = originHalo(plateUv, originA, rockA) * xenon * 0.16
-    + originHalo(plateUv, originB, rockB) * carbon * 0.14;
+  let halo = originHalo(plateUv, originA, rockA) * mix(xenon, carbon, 0.35) * 0.16
+    + originHalo(plateUv, originB, rockB) * carbon * 0.16;
   let nearA = 1.0 - smoothstep(0.0, 0.14, dot(toLamp(plateUv, originA), dirA));
   let nearB = 1.0 - smoothstep(0.0, 0.14, dot(toLamp(plateUv, originB), dirB));
-  let wash = (nearA * beamA * xenon * 0.08 + nearB * beamB * carbon * 0.07) * (0.7 + 0.3 * seaGain);
+  let wash = (nearA * beamA * xenon * 0.08 + nearB * beamB * carbon * 0.1) * (0.7 + 0.3 * seaGain);
   col += (halo * (0.55 + 0.45 * hull) + wash * water) * (0.85 + 0.15 * seaGain);
 
   let hullBody = hull * (1.0 - lamp);
