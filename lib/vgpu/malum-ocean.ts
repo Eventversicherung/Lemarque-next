@@ -13,11 +13,11 @@ export type MalumOceanOptions = {
   onError?: (error: unknown) => void;
 };
 
-export const MALUM_PLATE_SRC = "/collections/malum/hero/malum-hero-night.png?v=8";
+export const MALUM_PLATE_SRC = "/collections/malum/hero/malum-hero-night.png?v=11";
 
 const WIND_ANGLE = 2.44;
 const WIND_SPEED = 12;
-const BOAT_UV: readonly [number, number] = [0.83, 0.19];
+const BOAT_UV: readonly [number, number] = [0.848, 0.181];
 const BEAM_DIR: readonly [number, number] = [-0.53, 0.85];
 
 const TEXTURE_USAGE = 0x02 | 0x04 | 0x10;
@@ -75,14 +75,15 @@ export function startMalumOcean(
   const startLoop = () => {
     if (disposed || paused || !gpu || !canvasSurface || !ocean || loop) return;
     const time = clock(gpu);
+    let simTime = time.time;
     loop = frameLoop(
       gpu,
       (frame) => {
         if (paused || disposed || !canvasSurface || !ocean) return;
-        const t = time.time;
+        simTime += Math.min(Math.max(time.deltaTime, 0), 1 / 30);
         ocean.set({
           params: {
-            time: t,
+            time: simTime,
           },
         });
         frame.pass(canvasSurface, ocean);
