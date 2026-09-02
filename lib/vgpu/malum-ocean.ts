@@ -16,7 +16,7 @@ export type MalumOceanOptions = {
 export const MALUM_PLATE_SRC = "/collections/malum/hero/malum-hero-night.webp?v=2";
 
 const WIND_ANGLE = 3.55;
-const WIND_SPEED = 13;
+const WIND_SPEED = 14.5;
 const BOAT_UV: readonly [number, number] = [0.84, 0.18];
 const BEAM_DIR: readonly [number, number] = [-0.75, 0.66];
 

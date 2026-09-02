@@ -11,6 +11,27 @@ export fn blinnSpecular(n: vec3f, viewDir: vec3f, lightDir: vec3f, hardness: f32
   return pow(max(dot(n, h), 0.0), hardness);
 }
 
+// Spectral RGB weights from transmission/glass.wgsl. White light through
+// a dielectric (water or glass) splits along these lobes.
+export fn spectralWeight(t: f32) -> vec3f {
+  return vec3f(
+    exp(-pow((t - 0.05) / 0.45, 2.0)),
+    exp(-pow((t - 0.50) / 0.38, 2.0)),
+    exp(-pow((t - 0.95) / 0.45, 2.0)),
+  );
+}
+
+// Screen-space Snell offset. Same `refract()` used by the glass cube;
+// looking down, the xz bend is the UV warp of whatever sits under the surface.
+export fn waterRefractOffset(n: vec3f, eta: f32, thickness: f32) -> vec2f {
+  let incident = vec3f(0.0, -1.0, 0.0);
+  let bent = refract(incident, n, eta);
+  if (dot(bent, bent) < 1.0e-6) {
+    return vec2f(0.0);
+  }
+  return bent.xz * thickness;
+}
+
 export fn acesTonemap(x: vec3f) -> vec3f {
   let a = 2.51;
   let b = 0.03;

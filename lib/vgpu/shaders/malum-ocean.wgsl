@@ -1,6 +1,11 @@
-import { blinnSpecular, dielectricFresnel } from "./lighting.wgsl";
+import { blinnSpecular, dielectricFresnel, spectralWeight, waterRefractOffset } from "./lighting.wgsl";
 import { sampleWaves } from "./waves.wgsl";
 import { fbmSimplex2d } from "@vgpu/wgsl-std/noise/simplex";
+
+// Water IOR and spectral spread follow transmission/glass.wgsl
+// (`glass.ior`, `dispersion_spread`) retuned for seawater, not glass.
+const WATER_IOR: f32 = 1.333;
+const DISPERSION: f32 = 0.06;
 
 struct Params {
   time: f32,
@@ -38,27 +43,29 @@ fn luma(c: vec3f) -> f32 {
   return dot(c, vec3f(0.2126, 0.7152, 0.0722));
 }
 
-fn beamMask(uv: vec2f, n: vec3f, height: f32) -> f32 {
+fn beamMask(uv: vec2f, n: vec3f, height: f32) -> vec3f {
   let dir = normalize(params.beamDir);
   let origin = params.boatUv;
   let aspect = viewSize().y / max(viewSize().x, 1.0);
-  let warped = uv + n.xz * vec2f(0.02, 0.02 / max(aspect, 0.2));
+  let warped = uv + n.xz * vec2f(0.028, 0.028 / max(aspect, 0.2));
   let toPoint = (warped - origin) * vec2f(1.0, aspect);
   let along = dot(toPoint, dir);
   let side = abs(dot(toPoint, vec2f(-dir.y, dir.x)));
-  let width = 0.01 + along * 0.145 + height * 0.014;
-  let cone = 1.0 - smoothstep(width, width + 0.05 + abs(height) * 0.025, side);
-  let shaft = smoothstep(-0.02, 0.035, along) * (1.0 - smoothstep(0.78, 1.22, along));
-  let core = 1.0 - smoothstep(width * 0.28, width * 0.9, side);
-  return clamp(cone * shaft, 0.0, 1.0) * mix(0.5, 1.0, core);
+  let width = 0.01 + along * 0.145 + height * 0.018;
+  let cone = 1.0 - smoothstep(width, width + 0.055 + abs(height) * 0.03, side);
+  let shaft = smoothstep(-0.02, 0.04, along) * (1.0 - smoothstep(0.78, 1.22, along));
+  let core = 1.0 - smoothstep(width * 0.22, width * 0.82, side);
+  let beam = clamp(cone * shaft, 0.0, 1.0);
+  let rim = beam * (1.0 - core);
+  return vec3f(beam, rim, along);
 }
 
 @fragment fn fs_main(@location(0) uv: vec2f) -> @location(0) vec4f {
-  let world = uv * vec2f(36.0, 20.0);
-  let wave = sampleWaves(world, params.time, params.windAngle, params.windSpeed, params.quality);
+  let world = uv * vec2f(16.0, 9.0);
+  let wave = sampleWaves(world, params.time * 1.15, params.windAngle, params.windSpeed, params.quality);
   let chopOct = select(2, 4, params.quality > 0.5);
   let chop = fbmSimplex2d(
-    world * 0.42 + vec2f(params.time * 0.18, params.time * 0.04),
+    world * 0.55 + vec2f(params.time * 0.22, params.time * 0.05),
     chopOct,
     2.17,
     0.5,
@@ -66,47 +73,70 @@ fn beamMask(uv: vec2f, n: vec3f, height: f32) -> f32 {
 
   let n = wave.normal;
   let height = wave.displacement.y;
-  let beam = beamMask(uv, n, height);
-
-  let plateUv = uv + n.xz * mix(0.008, 0.04, beam) + vec2f(height * 0.005);
-  var col = samplePlate(plateUv);
-
-  col *= vec3f(0.62, 0.82, 1.12);
-  col = mix(col, vec3f(0.006, 0.016, 0.045), 0.18);
+  let beamParts = beamMask(uv, n, height);
+  let beam = beamParts.x;
+  let rim = beamParts.y;
+  let along = beamParts.z;
 
   let viewDir = vec3f(0.0, 1.0, 0.0);
-  let lightDir = normalize(vec3f(params.beamDir.x, 0.42, params.beamDir.y));
+  let lightDir = normalize(vec3f(params.beamDir.x, 0.38, params.beamDir.y));
   let facing = max(n.y, 0.0);
-  let fres = dielectricFresnel(1.333, facing);
-  let spec = blinnSpecular(n, viewDir, lightDir, mix(180.0, 420.0, params.quality));
-  let foam = smoothstep(0.68, 0.22, wave.jacobian) * (0.4 + 0.6 * chop);
+  let fres = dielectricFresnel(WATER_IOR, facing);
+  let spec = blinnSpecular(n, viewDir, lightDir, mix(140.0, 380.0, params.quality));
+  let foam = smoothstep(0.72, 0.2, wave.jacobian) * (0.35 + 0.65 * chop);
 
-  let cauUv = world * 0.9 + n.xz * 3.2 + vec2f(params.time * 0.35, -params.time * 0.12);
-  let cau = fbmSimplex2d(cauUv, select(2, 3, params.quality > 0.5), 2.1, 0.55);
-  let caustic = pow(max(cau * 0.5 + 0.5, 0.0), 5.0) * beam * facing;
+  // Wave facets thicken the optical path, so the plate warps like real water
+  // and the white beam splits further from the boat — same idea as the
+  // homepage prism / transmission cube.
+  let thickness = 0.045 + abs(height) * 0.045 + beam * 0.04;
+  let count = select(3, 5, params.quality > 0.5);
+  var spectrum = vec3f(0.0);
+  var total = vec3f(0.0);
+  for (var i = 0; i < 5; i++) {
+    if (i >= count) { break; }
+    let t = (f32(i) + 0.5) / f32(count);
+    let spectralIor = max(1.0, WATER_IOR + (t - 0.5) * DISPERSION);
+    let offset = waterRefractOffset(n, 1.0 / spectralIor, thickness);
+    let weight = spectralWeight(t);
+    spectrum += samplePlate(uv + offset) * weight;
+    total += weight;
+  }
+  var transmitted = spectrum / max(total, vec3f(1.0e-4));
 
+  let deep = vec3f(0.003, 0.012, 0.04);
+  let shallow = vec3f(0.025, 0.07, 0.13);
+  let water = mix(deep, shallow, pow(facing, 0.45));
+  transmitted = mix(water, transmitted, 0.78);
+
+  let body = smoothstep(0.16, 0.035, luma(transmitted));
   let trough = clamp(1.0 - facing, 0.0, 1.0);
-  let body = smoothstep(0.16, 0.035, luma(col));
-  col *= mix(1.0, 0.72, body * (1.0 - beam * 0.55));
-  col += vec3f(0.07, 0.16, 0.28) * body * beam * trough * 0.22;
+  transmitted *= mix(1.0, 0.7, body * (1.0 - beam * 0.5));
+  transmitted += vec3f(0.06, 0.14, 0.26) * body * beam * trough * 0.2;
 
-  col += vec3f(0.55, 0.78, 1.0) * foam * beam * 0.72;
-  col += vec3f(0.75, 0.9, 1.0) * spec * beam * 1.35;
-  col += vec3f(0.18, 0.42, 0.82) * beam * (0.08 + 0.32 * fres);
-  col += vec3f(0.45, 0.78, 1.0) * caustic * 0.55;
-  col += vec3f(0.22, 0.38, 0.7) * beam * trough * 0.12;
+  let reflection = vec3f(0.006, 0.016, 0.038) + vec3f(0.9, 0.96, 1.0) * spec * beam * 1.8;
+  var col = mix(transmitted, reflection, mix(0.05, 0.72, fres));
+
+  col += vec3f(0.62, 0.86, 1.0) * foam * beam * 0.55;
+  col += vec3f(0.2, 0.45, 0.85) * beam * (0.06 + 0.28 * fres);
 
   let dir = normalize(params.beamDir);
   let aspect = viewSize().y / max(viewSize().x, 1.0);
-  let toPoint = (uv - params.boatUv) * vec2f(1.0, aspect);
-  let along = max(dot(toPoint, dir), 0.0);
-  let haze = beam * (1.0 - smoothstep(0.0, 0.85, along)) * 0.12;
-  col += vec3f(0.55, 0.72, 0.95) * haze;
+  let perp = vec2f(-dir.y, dir.x);
+  let facet = length(n.xz);
+  let split = along * (0.01 + 0.055 * facet) * rim;
+  let prismR = samplePlate(uv + waterRefractOffset(n, 1.0 / (WATER_IOR - 0.03), thickness) + perp * split);
+  let prismB = samplePlate(uv + waterRefractOffset(n, 1.0 / (WATER_IOR + 0.03), thickness) - perp * split);
+  col.r += (prismR.r - transmitted.r) * rim * 0.85;
+  col.b += (prismB.b - transmitted.b) * rim * 0.85;
+  col += spectralWeight(clamp(along * 0.55 + facet * 0.35, 0.0, 1.0)) * rim * (0.16 + 0.45 * facet);
 
-  let grain = fbmSimplex2d(uv * 28.0 + vec2f(params.time * 0.04, 0.0), 2, 2.0, 0.5);
-  col += grain * 0.01;
+  let haze = beam * (1.0 - smoothstep(0.0, 0.85, max(along, 0.0))) * 0.1;
+  col += vec3f(0.7, 0.84, 1.0) * haze;
 
-  let vignette = 1.0 - 0.28 * dot(uv - vec2f(0.5), uv - vec2f(0.5));
+  let grain = fbmSimplex2d(uv * 26.0 + vec2f(params.time * 0.04, 0.0), 2, 2.0, 0.5);
+  col += grain * 0.008;
+
+  let vignette = 1.0 - 0.26 * dot(uv - vec2f(0.5), uv - vec2f(0.5));
   col *= vignette;
 
   return vec4f(clamp(col, vec3f(0.0), vec3f(1.0)), 1.0);
