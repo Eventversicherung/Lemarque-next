@@ -13,7 +13,7 @@ export type MalumOceanOptions = {
   onError?: (error: unknown) => void;
 };
 
-export const MALUM_PLATE_SRC = "/collections/malum/hero/malum-hero-night.png?v=11";
+export const MALUM_PLATE_SRC = "/collections/malum/hero/malum-hero-night.png?v=12";
 
 const WIND_ANGLE = 2.44;
 const WIND_SPEED = 12;
@@ -80,7 +80,7 @@ export function startMalumOcean(
       gpu,
       (frame) => {
         if (paused || disposed || !canvasSurface || !ocean) return;
-        simTime += Math.min(Math.max(time.deltaTime, 0), 1 / 30);
+        simTime += Math.min(Math.max(time.deltaTime, 0), 1 / 45);
         ocean.set({
           params: {
             time: simTime,
@@ -112,7 +112,7 @@ export function startMalumOcean(
       }
 
       canvasSurface = surface(gpu, canvas, {
-        dpr: reduced ? [1, 1.5] : [1, 2],
+        dpr: reduced ? [1, 1.25] : [1, 1.5],
         alphaMode: "opaque",
       });
       params.texel = [

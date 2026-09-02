@@ -65,7 +65,7 @@ export fn sampleWaves(p: vec2f, time: f32, windAngle: f32, windSpeed: f32, quali
     vec4f(d7.x, d7.y, 0.045 * amp, peak * 0.048),
   );
   let phases = array<f32, 8>(0.0, 1.7, 3.1, 4.6, 0.9, 2.4, 5.2, 3.8);
-  let count = select(5, 8, quality > 0.75);
+  let count = select(4, 6, quality > 0.75);
 
   for (var i = 0; i < 8; i++) {
     if (i >= count) { break; }

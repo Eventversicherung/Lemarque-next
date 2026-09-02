@@ -55,7 +55,7 @@ export function MalumOceanHero({ collection }: { collection: Collection }) {
       ([entry]) => {
         handle?.setPaused(!entry?.isIntersecting);
       },
-      { threshold: 0.12 },
+      { threshold: 0, rootMargin: "48px" },
     );
     observer.observe(canvas);
 
