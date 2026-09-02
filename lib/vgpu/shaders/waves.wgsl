@@ -49,11 +49,11 @@ export fn sampleWaves(p: vec2f, time: f32, windAngle: f32, windSpeed: f32, quali
     let w4 = normalize(wind + crossWind * 0.7);
     let w5 = normalize(wind - crossWind * 0.85);
     let waves = array<vec4f, 5>(
-      vec4f(wind.x, wind.y, 0.42 * amp, 12.0),
-      vec4f(w2.x, w2.y, 0.28 * amp, 6.4),
-      vec4f(w3.x, w3.y, 0.20 * amp, 3.6),
-      vec4f(w4.x, w4.y, 0.13 * amp, 2.1),
-      vec4f(w5.x, w5.y, 0.09 * amp, 1.15),
+      vec4f(wind.x, wind.y, 0.34 * amp, 14.0),
+      vec4f(w2.x, w2.y, 0.24 * amp, 7.2),
+      vec4f(w3.x, w3.y, 0.16 * amp, 4.0),
+      vec4f(w4.x, w4.y, 0.1 * amp, 2.2),
+      vec4f(w5.x, w5.y, 0.07 * amp, 1.2),
     );
   let phases = array<f32, 5>(0.0, 1.7, 3.1, 4.6, 0.9);
   let count = select(3, 5, quality > 0.5);

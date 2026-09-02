@@ -15,10 +15,10 @@ export type MalumOceanOptions = {
 
 export const MALUM_PLATE_SRC = "/collections/malum/hero/malum-hero-night.webp?v=2";
 
-const WIND_ANGLE = 3.55;
-const WIND_SPEED = 14.5;
-const BOAT_UV: readonly [number, number] = [0.84, 0.18];
-const BEAM_DIR: readonly [number, number] = [-0.75, 0.66];
+const WIND_ANGLE = 2.25;
+const WIND_SPEED = 7;
+const BOAT_UV: readonly [number, number] = [0.72, 0.155];
+const BEAM_DIR: readonly [number, number] = [-0.63, 0.78];
 
 const TEXTURE_USAGE = 0x02 | 0x04 | 0x10;
 
@@ -83,10 +83,6 @@ export function startMalumOcean(
         ocean.set({
           params: {
             time: t,
-            beamDir: [
-              BEAM_DIR[0],
-              BEAM_DIR[1] + Math.sin(t * 0.13) * 0.035,
-            ],
           },
         });
         frame.pass(canvasSurface, ocean);
