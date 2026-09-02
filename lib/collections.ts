@@ -86,6 +86,8 @@ export const collections: Collection[] = [
       width: 1536,
       height: 1024,
     },
+    // Desktop: boat upper-right. Phone fallback (no WebGPU) uses the
+    // MalumOceanHero object-position so the serpent fills the frame.
     heroImagePosition: "80% 50%",
     // Same generated scene with the LEMARQUE mark and collection name
     // burned in, sized to the 1200x630 Open Graph standard - chat apps

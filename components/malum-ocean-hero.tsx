@@ -74,12 +74,7 @@ export function MalumOceanHero({ collection }: { collection: Collection }) {
         alt={collection.heroImage.alt}
         fill
         priority
-        className="object-cover"
-        style={
-          collection.heroImagePosition
-            ? { objectPosition: collection.heroImagePosition }
-            : undefined
-        }
+        className="object-cover object-[36%_68%] md:object-[80%_50%]"
         sizes="100vw"
       />
       <canvas
