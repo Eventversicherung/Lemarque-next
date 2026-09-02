@@ -23,9 +23,12 @@ fn coverUv(uv: vec2f) -> vec2f {
   let view = 1.0 / max(params.texel, vec2f(1.0e-5));
   let scale = max(view.x / max(tex.x, 1.0), view.y / max(tex.y, 1.0));
   let crop = view / (tex * scale);
-  // Keep the lamp in frame on portrait crops. A focus too far down the
-  // beam used to crop the boat off the right edge, leaving black sea.
-  let focus = params.boatUv + normalize(params.beamDir) * 0.1;
+  // Portrait crops the sides: keep the lamp. Landscape crops top/bottom:
+  // look down the beam so the boat is not glued to the top edge and the
+  // serpent plus storm clouds stay in frame.
+  let dir = normalize(params.beamDir);
+  let alongFocus = select(0.26, 0.08, crop.x < 0.92);
+  let focus = params.boatUv + dir * alongFocus;
   let half = crop * 0.5;
   let center = clamp(focus, half, vec2f(1.0) - half);
   return (uv - 0.5) * crop + center;
@@ -135,9 +138,9 @@ fn beamCone(plateUv: vec2f, n: vec3f, height: f32) -> vec3f {
 
   // The still is a night plate — lift and add the cone so the beam reads
   // as a shaft, not a 2% overlay on crushed navy.
-  col = mix(col, col * 1.55 + beamCol * 0.18, lit * 0.7);
-  col += beamCol * beam * (0.22 + 0.5 * cau * through + 0.85 * spec * over);
-  col += (prism - vec3f(0.33)) * rim * (0.7 + 0.45 * through);
+  col = mix(col, col * 1.75 + beamCol * 0.28, lit * 0.78);
+  col += beamCol * beam * (0.32 + 0.58 * cau * through + 0.95 * spec * over);
+  col += (prism - vec3f(0.33)) * rim * (0.55 + 0.4 * through);
   col += vec3f(0.95, 0.98, 1.0) * spec * nDotL * over * lit * 0.9;
   col += vec3f(0.78, 0.9, 1.0) * foam * lit * 0.55;
   col += vec3f(0.28, 0.62, 1.0) * cau * facing * lit * 0.35;
@@ -149,7 +152,7 @@ fn beamCone(plateUv: vec2f, n: vec3f, height: f32) -> vec3f {
   col += vec3f(0.12, 0.28, 0.48) * deep * beam * trough * 0.22;
 
   let haze = beam * (1.0 - smoothstep(0.0, 0.85, max(along, 0.0)));
-  col += vec3f(0.7, 0.86, 1.0) * haze * 0.2;
+  col += vec3f(0.7, 0.86, 1.0) * haze * 0.3;
 
   let grain = fbmSimplex2d(uv * 20.0 + vec2f(params.time * 0.03, 0.0), 2, 2.0, 0.5);
   col += grain * 0.01;

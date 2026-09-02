@@ -13,12 +13,12 @@ export type MalumOceanOptions = {
   onError?: (error: unknown) => void;
 };
 
-export const MALUM_PLATE_SRC = "/collections/malum/hero/malum-hero-night.webp?v=4";
+export const MALUM_PLATE_SRC = "/collections/malum/hero/malum-hero-night.webp?v=5";
 
 const WIND_ANGLE = 2.44;
 const WIND_SPEED = 16;
-const BOAT_UV: readonly [number, number] = [0.83, 0.19];
-const BEAM_DIR: readonly [number, number] = [-0.4, 0.92];
+const BOAT_UV: readonly [number, number] = [0.74, 0.17];
+const BEAM_DIR: readonly [number, number] = [-0.58, 0.81];
 
 const TEXTURE_USAGE = 0x02 | 0x04 | 0x10;
 
