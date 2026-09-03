@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import type { Collection } from "@/lib/collections";
 import {
@@ -24,6 +24,12 @@ function isMobilePerf(): boolean {
 export function MalumOceanHero({ collection }: { collection: Collection }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [live, setLive] = useState(false);
+  const [warming, setWarming] = useState(false);
+
+  useLayoutEffect(() => {
+    if (prefersReducedMotion() || !isWebGpuAvailable()) return;
+    setWarming(true);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -36,9 +42,13 @@ export function MalumOceanHero({ collection }: { collection: Collection }) {
     handle = startMalumOcean(canvas, {
       reduced: isMobilePerf(),
       onReady: () => {
-        if (!cancelled) setLive(true);
+        if (!cancelled) {
+          setLive(true);
+          setWarming(false);
+        }
       },
       onError: (error) => {
+        if (!cancelled) setWarming(false);
         if (process.env.NODE_ENV !== "production") {
           console.error("[malum-ocean]", error);
         }
@@ -74,13 +84,15 @@ export function MalumOceanHero({ collection }: { collection: Collection }) {
         alt={collection.heroImage.alt}
         fill
         priority
-        className="object-cover object-[36%_68%] md:object-[80%_50%]"
+        className={`object-cover object-[36%_68%] md:object-[80%_50%] transition-[filter,transform] duration-1000 ease-out ${
+          warming && !live ? "scale-[1.04] blur-md" : "scale-100 blur-0"
+        }`}
         sizes="100vw"
       />
       <canvas
         ref={canvasRef}
         aria-hidden
-        className={`absolute inset-0 h-full w-full transition-opacity duration-700 ${
+        className={`absolute inset-0 h-full w-full transition-opacity duration-1000 ease-out ${
           live ? "opacity-100" : "opacity-0"
         }`}
         style={{ display: "block", pointerEvents: "none" }}

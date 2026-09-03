@@ -19,6 +19,7 @@ const WIND_ANGLE = 2.44;
 const WIND_SPEED = 12;
 const BOAT_UV: readonly [number, number] = [0.848, 0.181];
 const BEAM_DIR: readonly [number, number] = [-0.53, 0.85];
+const SEA_PREHEAT = 18;
 
 const TEXTURE_USAGE = 0x02 | 0x04 | 0x10;
 
@@ -61,9 +62,11 @@ export function startMalumOcean(
   let ocean: Effect | undefined;
   let plate: ReturnType<Gpu["gpu"]["createTexture"]> | undefined;
   let unsubscribeResize: (() => void) | undefined;
+  let simTime = SEA_PREHEAT;
+  let revealed = false;
 
   const params = {
-    time: 0,
+    time: SEA_PREHEAT,
     windSpeed: WIND_SPEED,
     texel: [1 / 16, 1 / 9] as [number, number],
     boatUv: [...BOAT_UV] as [number, number],
@@ -75,7 +78,6 @@ export function startMalumOcean(
   const startLoop = () => {
     if (disposed || paused || !gpu || !canvasSurface || !ocean || loop) return;
     const time = clock(gpu);
-    let simTime = time.time;
     loop = frameLoop(
       gpu,
       (frame) => {
@@ -87,6 +89,10 @@ export function startMalumOcean(
           },
         });
         frame.pass(canvasSurface, ocean);
+        if (!revealed) {
+          revealed = true;
+          onReady?.();
+        }
       },
       { fps: reduced ? 30 : 0 },
     );
@@ -150,8 +156,19 @@ export function startMalumOcean(
         });
       });
 
+      try {
+        await Promise.race([
+          ocean.compile(canvasSurface),
+          new Promise<void>((resolve) => {
+            window.setTimeout(resolve, 3500);
+          }),
+        ]);
+      } catch {
+        // First presented frame compiles synchronously if warm-up failed.
+      }
+      if (disposed) return;
+
       startLoop();
-      onReady?.();
     } catch (error) {
       if (!disposed) onError?.(error);
     }

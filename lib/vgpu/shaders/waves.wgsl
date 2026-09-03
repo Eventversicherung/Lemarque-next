@@ -46,22 +46,24 @@ export fn sampleWaves(p: vec2f, time: f32, windAngle: f32, windSpeed: f32, quali
   acc.normal = vec3f(0.0, 1.0, 0.0);
   acc.jacobian = 1.0;
 
-  let d1 = normalize(wind + crossWind * 0.18);
-  let d2 = normalize(wind - crossWind * 0.22);
   let d3 = normalize(wind + crossWind * 0.48);
   let d4 = normalize(wind - crossWind * 0.55);
   let d5 = normalize(wind + crossWind * 0.82);
   let d6 = normalize(wind - crossWind * 0.9);
   let d7 = normalize(wind + crossWind * 0.12);
 
+  let fromBeast = -wind;
+  let b1 = normalize(fromBeast + crossWind * 0.2);
+  let b2 = normalize(fromBeast - crossWind * 0.26);
+
   let waves = array<vec4f, 8>(
-    vec4f(wind.x, wind.y, 0.32 * amp, peak * 1.15),
-    vec4f(d1.x, d1.y, 0.26 * amp, peak * 0.72),
-    vec4f(d2.x, d2.y, 0.2 * amp, peak * 0.46),
-    vec4f(d3.x, d3.y, 0.15 * amp, peak * 0.3),
-    vec4f(d4.x, d4.y, 0.11 * amp, peak * 0.19),
-    vec4f(d5.x, d5.y, 0.08 * amp, peak * 0.12),
-    vec4f(d6.x, d6.y, 0.06 * amp, peak * 0.075),
+    vec4f(fromBeast.x, fromBeast.y, 0.3 * amp, peak * 0.58),
+    vec4f(b1.x, b1.y, 0.24 * amp, peak * 0.38),
+    vec4f(b2.x, b2.y, 0.18 * amp, peak * 0.26),
+    vec4f(d3.x, d3.y, 0.15 * amp, peak * 0.22),
+    vec4f(d4.x, d4.y, 0.11 * amp, peak * 0.15),
+    vec4f(d5.x, d5.y, 0.08 * amp, peak * 0.1),
+    vec4f(d6.x, d6.y, 0.06 * amp, peak * 0.07),
     vec4f(d7.x, d7.y, 0.045 * amp, peak * 0.048),
   );
   let phases = array<f32, 8>(0.0, 1.7, 3.1, 4.6, 0.9, 2.4, 5.2, 3.8);

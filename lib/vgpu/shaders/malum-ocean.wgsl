@@ -157,7 +157,8 @@ fn worldScale(uv: vec2f) -> vec2f {
   let plateN = normalize(vec3f(-dpdx(bodyL) * 80.0, 1.0, -dpdy(bodyL) * 80.0));
 
   let world = worldScale(uv);
-  let wave = sampleWaves(world, params.time * 0.42, params.windAngle, params.windSpeed, params.quality);
+  let waveAge = params.time * 0.55 + (1.0 - plateUv.x) * 2.4 + plateUv.y * 1.6;
+  let wave = sampleWaves(world, waveAge, params.windAngle, params.windSpeed, params.quality);
   var n = normalize(vec3f(
     plateN.x + wave.normal.x * 0.62 * water,
     max(plateN.y * 0.58 + wave.normal.y * 0.48, 0.22),
