@@ -7,7 +7,6 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
-import { BrandLogo } from "@/components/brand-logo";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { collections } from "@/lib/collections";
 
@@ -40,21 +39,13 @@ function HeroSection() {
         className="relative z-10 flex flex-col items-center justify-center h-full px-6"
         style={{ opacity }}
       >
-        <motion.h1
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
-          aria-label="LEMARQUE"
-          className="flex justify-center px-2"
-        >
-          <BrandLogo size="xl" asLink={false} priority />
-        </motion.h1>
+        <h1 className="sr-only">LEMARQUE</h1>
 
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 0.6, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.0 }}
-          className="mt-5 md:mt-6 text-xs md:text-sm uppercase tracking-[0.3em] text-white/60"
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="text-xs md:text-sm uppercase tracking-[0.3em] text-white/60"
         >
           Manufactured Attire
         </motion.p>

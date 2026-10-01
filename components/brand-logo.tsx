@@ -7,6 +7,8 @@ interface BrandLogoProps {
   size?: "sm" | "md" | "lg" | "xl";
   asLink?: boolean;
   priority?: boolean;
+  /** Header mark: crest only. Full lockup (crest + wordmark) stays the default. */
+  crestOnly?: boolean;
 }
 
 const sizeMap = {
@@ -43,6 +45,7 @@ export function BrandLogo({
   size = "md",
   asLink = true,
   priority = false,
+  crestOnly = false,
 }: BrandLogoProps) {
   const s = sizeMap[size];
 
@@ -51,7 +54,7 @@ export function BrandLogo({
       className={cn(
         "inline-flex flex-col items-stretch overflow-hidden select-none",
         s.width,
-        s.gap,
+        !crestOnly && s.gap,
         className
       )}
     >
@@ -65,16 +68,18 @@ export function BrandLogo({
           priority={priority}
         />
       </span>
-      <span className="relative w-full min-w-0 aspect-[946/92]">
-        <Image
-          src="/brand/wordmark.webp"
-          alt=""
-          fill
-          sizes={s.wordmarkSizes}
-          className="object-contain object-center pointer-events-none"
-          priority={priority}
-        />
-      </span>
+      {!crestOnly && (
+        <span className="relative w-full min-w-0 aspect-[946/92]">
+          <Image
+            src="/brand/wordmark.webp"
+            alt=""
+            fill
+            sizes={s.wordmarkSizes}
+            className="object-contain object-center pointer-events-none"
+            priority={priority}
+          />
+        </span>
+      )}
     </span>
   );
 
