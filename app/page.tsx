@@ -41,19 +41,10 @@ function HeroSection() {
       >
         <h1 className="sr-only">LEMARQUE</h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 0.6, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-xs md:text-sm uppercase tracking-[0.3em] text-white/60"
-        >
-          Manufactured Attire
-        </motion.p>
-
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.8, duration: 0.8 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
           className="absolute bottom-12"
         >
           <motion.div
