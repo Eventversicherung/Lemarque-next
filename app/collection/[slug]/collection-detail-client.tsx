@@ -15,7 +15,7 @@ import {
   hasShoppableLooks,
 } from "@/lib/collections";
 import { buildShopGroups } from "@/lib/shop-groups";
-import { MalumOceanHero } from "@/components/malum-ocean-hero";
+import { MalumLookIndex } from "@/components/malum-look-index";
 
 function HeroParallax({ collection }: { collection: Collection }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -23,45 +23,26 @@ function HeroParallax({ collection }: { collection: Collection }) {
     target: ref,
     offset: ["start start", "end start"],
   });
-  const y = useTransform(
-    scrollYProgress,
-    [0, 1],
-    collection.slug === "malum" ? ["0%", "0%"] : ["0%", "25%"],
-  );
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
   return (
-    <section
-      ref={ref}
-      className={`relative overflow-hidden ${
-        collection.slug === "malum" ? "h-dvh" : "h-[70vh] md:h-[85vh]"
-      }`}
-    >
+    <section ref={ref} className="relative h-[70vh] md:h-[85vh] overflow-hidden">
       <motion.div className="absolute inset-0" style={{ y }}>
-        {collection.slug === "malum" ? (
-          <MalumOceanHero collection={collection} />
-        ) : (
-          <Image
-            src={collection.heroImage.src}
-            alt={collection.heroImage.alt}
-            fill
-            priority
-            className="object-cover"
-            style={
-              collection.heroImagePosition
-                ? { objectPosition: collection.heroImagePosition }
-                : undefined
-            }
-            sizes="100vw"
-          />
-        )}
-        <div
-          className={`absolute inset-0 ${
-            collection.slug === "malum"
-              ? "bg-linear-to-t from-background/35 via-transparent to-transparent"
-              : "bg-linear-to-t from-background via-black/30 to-transparent"
-          }`}
+        <Image
+          src={collection.heroImage.src}
+          alt={collection.heroImage.alt}
+          fill
+          priority
+          className="object-cover"
+          style={
+            collection.heroImagePosition
+              ? { objectPosition: collection.heroImagePosition }
+              : undefined
+          }
+          sizes="100vw"
         />
+        <div className="absolute inset-0 bg-linear-to-t from-background via-black/30 to-transparent" />
       </motion.div>
 
       <motion.div
@@ -212,27 +193,33 @@ export function CollectionDetailClient({
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        <HeroParallax collection={collection} />
+        {collection.slug === "malum" ? (
+          <MalumLookIndex collection={collection} />
+        ) : (
+          <HeroParallax collection={collection} />
+        )}
 
-        <div className="pt-4 px-6 md:px-16 flex flex-wrap items-center justify-between gap-4">
-          <Link
-            href="/collections"
-            className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300"
-          >
-            <ArrowLeft className="w-3 h-3" />
-            Back to Collections
-          </Link>
-
-          {hasShoppableLooks(collection) && (
+        {collection.slug !== "malum" && (
+          <div className="pt-4 px-6 md:px-16 flex flex-wrap items-center justify-between gap-4">
             <Link
-              href={`/collection/${collection.slug}/shop`}
-              className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-foreground border border-white/20 px-6 py-3 hover:bg-white hover:text-black transition-colors duration-300"
+              href="/collections"
+              className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors duration-300"
             >
-              Shop the Collection
-              <ArrowRight className="w-3 h-3" />
+              <ArrowLeft className="w-3 h-3" />
+              Back to Collections
             </Link>
-          )}
-        </div>
+
+            {hasShoppableLooks(collection) && (
+              <Link
+                href={`/collection/${collection.slug}/shop`}
+                className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-foreground border border-white/20 px-6 py-3 hover:bg-white hover:text-black transition-colors duration-300"
+              >
+                Shop the Collection
+                <ArrowRight className="w-3 h-3" />
+              </Link>
+            )}
+          </div>
+        )}
 
         <CollectionInfo collection={collection} />
         {hasShoppableLooks(collection) ? (
