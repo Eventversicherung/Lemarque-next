@@ -67,8 +67,15 @@ function HeroParallax({ collection }: { collection: Collection }) {
 }
 
 function CollectionInfo({ collection }: { collection: Collection }) {
+  const titled = collection.slug === "malum";
+
   return (
-    <section className="px-6 md:px-16 py-16 md:py-24 max-w-4xl">
+    <section className={titled ? "px-6 md:px-16 pt-20 md:pt-28 pb-12 md:pb-16 max-w-5xl" : "px-6 md:px-16 py-16 md:py-24 max-w-4xl"}>
+      {titled && (
+        <h1 className="font-brand text-5xl md:text-7xl lg:text-8xl leading-none tracking-[0.22em] md:tracking-[0.32em] text-white mb-8 md:mb-12">
+          {collection.name}
+        </h1>
+      )}
       <ScrollReveal>
         <p className="text-sm md:text-base leading-relaxed text-muted-foreground max-w-2xl">
           {collection.longDescription}

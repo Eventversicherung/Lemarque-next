@@ -48,7 +48,6 @@ export function MalumLookIndex({ collection }: { collection: Collection }) {
 
   return (
     <section className="flex h-dvh flex-col pt-28 md:pt-32">
-      <h1 className="sr-only">{collection.name}</h1>
       <ul className="grid min-h-0 flex-1 grid-cols-3 grid-rows-4 gap-px bg-background md:grid-cols-6 md:grid-rows-2">
         {looks.map((look, index) => {
           const image = sheetImage(look);
