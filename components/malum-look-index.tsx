@@ -7,20 +7,27 @@ import { getShopLooks, type Collection, type Look } from "@/lib/collections";
 import { getProduct } from "@/lib/products";
 import { getShopPieceHref } from "@/lib/shop-groups";
 
+function lookProduct(look: Look) {
+  return look.pieceSlugs[0] ? getProduct(look.pieceSlugs[0]) : undefined;
+}
+
 function lookTitle(look: Look): string {
   if (look.name) return look.name;
-  const product = look.pieceSlugs[0] ? getProduct(look.pieceSlugs[0]) : undefined;
-  return product?.name ?? "Look";
+  return lookProduct(look)?.name ?? "Look";
+}
+
+function isHandbagLook(look: Look): boolean {
+  return look.pieceSlugs.every((slug) => getProduct(slug)?.category === "Handbag");
 }
 
 /**
  * Malum opens as a contact sheet, not a full-viewport still.
- * Eight columns on large screens put the published looks in two rows
- * so the whole collection is readable before any scroll. Fewer columns
+ * Handbags stay in the shop feed below; the sheet is the clothing looks.
+ * Six columns on large screens put those looks in two rows. Fewer columns
  * on smaller screens keep each frame tappable.
  */
 export function MalumLookIndex({ collection }: { collection: Collection }) {
-  const looks = getShopLooks(collection);
+  const looks = getShopLooks(collection).filter((look) => !isHandbagLook(look));
 
   return (
     <section aria-labelledby="malum-look-index-title" className="pt-24 md:pt-28">
@@ -64,7 +71,7 @@ export function MalumLookIndex({ collection }: { collection: Collection }) {
         </div>
       </div>
 
-      <ul className="grid grid-cols-3 gap-1 px-1 sm:grid-cols-4 lg:grid-cols-8 lg:gap-1.5 lg:px-1.5">
+      <ul className="grid grid-cols-3 gap-1 px-1 md:grid-cols-6 md:gap-1.5 md:px-1.5">
         {looks.map((look, index) => {
           const title = lookTitle(look);
           const number = String(index + 1).padStart(2, "0");
@@ -84,9 +91,9 @@ export function MalumLookIndex({ collection }: { collection: Collection }) {
                   src={look.image.src}
                   alt=""
                   fill
-                  priority={index < 8}
+                  priority={index < 6}
                   className="object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out group-hover:scale-[1.04]"
-                  sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 12.5vw"
+                  sizes="(max-width: 768px) 33vw, 16vw"
                 />
                 <span className="pointer-events-none absolute top-1.5 left-1.5 bg-background/90 px-1.5 py-1 text-[9px] uppercase tracking-[0.18em] text-white">
                   {number}
